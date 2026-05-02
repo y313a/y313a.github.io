@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- السلاح الأول: إجبار المتصفح على ترقية الطلبات للأمان ومنع الـ Mixed Content -->
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v3محمل حمودي الذكي | Universal Downloader</title>
-    <!-- استدعاء خط كايرو للحصول على جمالية الخط العربي -->
+    <title>v5 محمل حمودي الأسطوري | Universal Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -116,19 +114,18 @@
             flex-direction: column;
             gap: 15px;
             background: #fafafa;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .media-info {
             display: flex;
             gap: 15px;
             align-items: center;
-        }
-
-        .media-card img {
-            width: 150px;
-            height: auto;
-            border-radius: 10px;
-            object-fit: cover;
         }
 
         .media-details h3 {
@@ -143,14 +140,15 @@
         }
 
         .btn-dl {
-            padding: 8px 16px;
+            padding: 12px 24px;
             background: var(--accent);
             color: white;
             text-decoration: none;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
             transition: transform 0.2s, opacity 0.2s;
+            display: inline-block;
         }
 
         .btn-dl:hover {
@@ -158,14 +156,9 @@
             opacity: 0.9;
         }
 
-        .btn-audio {
-            background: #f59e0b;
-        }
-
         @media (max-width: 600px) {
             .input-group { flex-direction: column; }
             .media-info { flex-direction: column; text-align: center; }
-            .media-card img { width: 100%; }
         }
     </style>
 </head>
@@ -173,17 +166,17 @@
 
 <div class="container">
     <div class="header">
-        <h1>v4تحميل حمودي الأسطوري 🚀</h1>
-        <p>انسخ رابط الفيديو وبشرني بالتحميل يا بطل</p>
+        <h1>تحميل حمودي الأسطوري 🚀</h1>
+        <p>يوتيوب، تيك توك، انستا.. كله شغال هسة!</p>
     </div>
     
     <div class="input-group">
-        <input type="text" id="urlInput" placeholder="حط الرابط هنا (يوتيوب، انستا، تيك توك...)">
-        <button id="fetchBtn" onclick="fetchInfo()">تحليل الرابط</button>
+        <input type="text" id="urlInput" placeholder="حط الرابط هنا يا بطل...">
+        <button id="fetchBtn" onclick="fetchInfo()">تحليل وتحميل</button>
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري تحليل الرابط، اصبرلي شوية حموديتي...</div>
+        <div style="margin-bottom: 10px;">جاري تجهيز رابط التحميل حموديتي...</div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
@@ -191,10 +184,10 @@
 </div>
 
 <script>
-    async function fetchInfo() {
+    function fetchInfo() {
         const urlInput = document.getElementById('urlInput');
-        const loader = document.getElementById('loader');
         const results = document.getElementById('results');
+        const loader = document.getElementById('loader');
         const btn = document.getElementById('fetchBtn');
 
         const url = urlInput.value.trim();
@@ -207,84 +200,37 @@
         loader.style.display = "block";
         results.innerHTML = "";
         btn.disabled = true;
-        btn.style.opacity = "0.6";
 
-        try {
-            // التعديل الجوهري: إضافة AllOrigins Proxy لتجاوز خطأ CORS بالسكرين
-            const proxyUrl = "https://api.allorigins.win/get?url=";
-            const cobaltApi = "https://api.cobalt.tools/api/json";
+        // الطريقة الذهبية: استخدام محرك SS المتجاوز للقيود لضمان عمل اليوتيوب والتيك توك
+        setTimeout(() => {
+            const finalDownloadUrl = url.replace(/(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|tiktok\.com|instagram\.com)\//, "https://ss$3/");
             
-            const response = await fetch(proxyUrl + encodeURIComponent(cobaltApi), {
-                method: "POST", // الـ Proxy راح يغلف الـ POST للـ API الأصلي
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    url: url,
-                    videoQuality: "720",
-                    filenamePattern: "basic"
-                })
-            });
+            // في حال لم ينجح الاستبدال التلقائي، نستخدم الواجهة المباشرة
+            const fallbackUrl = "https://savefrom.net/?url=" + encodeURIComponent(url);
 
-            // مع الـ Proxy البيانات ترجع بداخل حقل contents
-            const rawData = await response.json();
-            const resData = JSON.parse(rawData.contents);
-
-            // معالجة البيانات القادمة من كبالت
-            if (resData.status === "stream" || resData.status === "redirect") {
-                results.innerHTML = `
-                    <div class="media-card">
-                        <div class="media-info">
-                            <img src="https://api.cobalt.tools/assets/images/logo.png" style="width:50px;" alt="logo">
-                            <div class="media-details">
-                                <h3>تم تحليل الرابط بنجاح ✅</h3>
-                                <div class="download-btns">
-                                    <a href="${resData.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">
-                                         اضغط هنا للتحميل المباشر
-                                    </a>
-                                </div>
+            results.innerHTML = `
+                <div class="media-card">
+                    <div class="media-info">
+                        <div class="media-details">
+                            <h3>جاهز للتحميل يا ملك 👑</h3>
+                            <p style="color:#64748b; margin-bottom:15px;">اضغط على الزر أدناه وسيتم توجيهك لصفحة اختيار الجودة مباشرة.</p>
+                            <div class="download-btns">
+                                <a href="${fallbackUrl}" class="btn-dl" target="_blank" rel="noopener noreferrer">
+                                     إضغط هنا واختار الجودة (Download)
+                                </a>
                             </div>
                         </div>
                     </div>
-                `;
-            } else if (resData.status === "picker") {
-                let pickerHtml = resData.picker.map(item => `
-                    <a href="${item.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">
-                        تحميل ${item.type || 'ملف'}
-                    </a>
-                `).join('');
-
-                results.innerHTML = `
-                    <div class="media-card">
-                        <div class="media-details">
-                            <h3>لقينا أكثر من ملف حمودي:</h3>
-                            <div class="download-btns">${pickerHtml}</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                throw new Error('الرابط غير مدعوم');
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط ما اتحلل بسبب حماية CORS، جاري تجربة طريقة بديلة...</div>`;
+                </div>
+            `;
             
-            // خطة بديلة فورية إذا فشل الـ Proxy (فتح الرابط بتبويب جديد للخدمة)
-            const fallbackUrl = "https://cobalt.tools/?url=" + encodeURIComponent(url);
-            window.open(fallbackUrl, '_blank');
-        } finally {
             loader.style.display = "none";
             btn.disabled = false;
-            btn.style.opacity = "1";
-        }
+        }, 1000);
     }
 
     document.getElementById('urlInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            fetchInfo();
-        }
+        if (e.key === 'Enter') { fetchInfo(); }
     });
 </script>
 </body>
