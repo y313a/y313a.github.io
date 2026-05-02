@@ -189,8 +189,7 @@
 </div>
 
 <script>
-    // الرابط المباشر للسيرفر مالتك على Hugging Face
-    // تم التعديل ليطابق السبيس HURX/dw
+    // الرابط المباشر للسيرفر مالتك على Hugging Face مع التأكد من البروتوكول
     const API_BASE = "https://hurx-dw.hf.space"; 
 
     async function fetchInfo() {
@@ -213,10 +212,12 @@
         btn.style.opacity = "0.6";
 
         try {
-            const response = await fetch(`${API_BASE}/get-info`, {
+            // إضافة السلاش بنهاية get-info/ لضمان استجابة السيرفر وتجاوز حماية CORS
+            const response = await fetch(`${API_BASE}/get-info/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({ url: url })
             });
@@ -229,7 +230,6 @@
                 resData.data.forEach(item => {
                     // توليد أزرار الجودات المتاحة
                     let formatsHtml = item.formats.map(f => {
-                        // تحويل الحجم إلى MB إذا كان متوفراً
                         const size = f.size ? `(${(f.size / (1024 * 1024)).toFixed(1)} MB)` : '';
                         return `
                         <a href="${f.url}" class="btn-dl" target="_blank" download>
@@ -267,7 +267,8 @@
             console.error('Error:', error);
             results.innerHTML = `
                 <div style="text-align:center; color: #ef4444; padding: 20px;">
-                    صار خلل بالاتصال بالسيرفر. تأكد إن الـ Space مالتك بوضع الـ (Running).
+                    صار خلل بالاتصال بالسيرفر. تأكد إن الـ Space مالتك بوضع الـ (Running)
+                    <br><small>أو جرب تفتح الموقع بمتصفح Chrome بدلاً من Brave</small>
                 </div>`;
         } finally {
             loader.style.display = "none";
