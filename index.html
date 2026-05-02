@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v6 محمل حمودي الذكي | Universal Downloader</title>
+    <title>v7 محمل حمودي الذكي | Universal Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -92,6 +92,11 @@
             background: var(--primary-hover);
         }
 
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
         .loader {
             display: none;
             text-align: center;
@@ -122,21 +127,25 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .media-info {
+        .download-item {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
             align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+            transition: 0.2s;
         }
 
-        .media-details h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
+        .download-item:hover {
+            border-color: var(--primary);
         }
 
-        .download-btns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .format-label {
+            font-weight: bold;
+            color: var(--text);
         }
 
         .btn-dl {
@@ -159,7 +168,6 @@
 
         @media (max-width: 600px) {
             .input-group { flex-direction: column; }
-            .media-info { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -168,7 +176,7 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>انسخ الرابط وشوف السحر بداخل صفحتك!</p>
+        <p>انسخ الرابط وشوف الشغل المعدل بداخل صفحتك!</p>
     </div>
     
     <div class="input-group">
@@ -202,33 +210,34 @@
         btn.disabled = true;
 
         try {
-            // استخدام محرك API بديل يدعم الطلبات المباشرة ويحل مشكلة CORS واليوتيوب
-            // رح نستخدم نظام iframe الذكي بداخل كارت النتائج حتى ما تطلع من صفحتك
-            const cleanUrl = url.split('?')[0];
-            
-            results.innerHTML = `
-                <div class="media-card">
-                    <div class="media-info">
-                        <div class="media-details">
-                            <h3>الرابط جاهز للتحميل ✅</h3>
-                            <p style="font-size:0.9rem; color:#64748b;">اختر الجودة اللي تناسبك من القائمة أدناه واضغط Download:</p>
-                            
-                            <div id="downloadArea" style="width:100%; min-height:250px; margin-top:15px; border-radius:12px; overflow:hidden;">
-                                <!-- استدعاء واجهة التحميل بداخل الـ Card مالتك وبدون تحويل خارجي -->
-                                <iframe 
-                                    src="https://loader.to/api/card/?url=${encodeURIComponent(url)}&color=2563eb" 
-                                    style="width:100%; height:250px; border:none;" 
-                                    scrolling="no">
-                                </iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // استخدام نظام السحب المباشر API بدلاً من iframe المحجوب
+            const response = await fetch(`https://api.vkrdown.com/server?vurl=${encodeURIComponent(url)}`);
+            const data = await response.json();
+
+            if (data && data.data && data.data.downloads) {
+                let html = `
+                    <div class="media-card">
+                        <h3 style="margin:0;">الروابط جاهزة حموديتي ✅</h3>
+                        <p style="font-size:0.9rem; color:#64748b; margin-bottom:15px;">اختر الجودة اللي تناسبك للتحميل المباشر:</p>
+                        <div id="downloadList">`;
+                
+                data.data.downloads.forEach(dl => {
+                    html += `
+                        <div class="download-item">
+                            <span class="format-label">${dl.format} (${dl.quality})</span>
+                            <a href="${dl.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">Download</a>
+                        </div>`;
+                });
+                
+                html += `</div></div>`;
+                results.innerHTML = html;
+            } else {
+                throw new Error("No download links found");
+            }
 
         } catch (error) {
             console.error('Error:', error);
-            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">صار خلل بالتحليل، تأكد من الرابط وجرب مرة ثانية حمودي!</div>`;
+            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط معاند شوية، تأكد منه وجرب مرة ثانية حمودي!</div>`;
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
