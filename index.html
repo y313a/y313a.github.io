@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محمل حمودي الذكي | Universal Downloader</title>
+    <!-- السلاح الأول: إجبار المتصفح على ترقية الطلبات للأمان ومنع الـ Mixed Content -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>v3محمل حمودي الذكي | Universal Downloader</title>
     <!-- استدعاء خط كايرو للحصول على جمالية الخط العربي -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -189,6 +191,7 @@
 </div>
 
 <script>
+    // السلاح الثاني: إضافة وقت الطلب للرابط لضمان عدم استجابة الكاش القديم
     const API_BASE = "https://hurx-dw.hf.space"; 
 
     async function fetchInfo() {
@@ -210,8 +213,10 @@
         btn.style.opacity = "0.6";
 
         try {
-            // التعديل هنا لضمان عبور الطلب بشكل سليم عبر CORS
-            const response = await fetch(`${API_BASE}/get-info/`, {
+            // إضافة التوقيت لمنع الكاش
+            const finalEndpoint = `${API_BASE}/get-info/?t=${new Date().getTime()}`;
+            
+            const response = await fetch(finalEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
