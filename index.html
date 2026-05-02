@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v12 محمل حمودي الذكي | Universal Downloader</title>
+    <title>v13 محمل حمودي الذكي | Ultimate Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -176,7 +176,7 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>انسخ الرابط وشوف الشغل المعدل بداخل صفحتك!</p>
+        <p>النسخة v13 - دعم يوتيوب وتيك توك المباشر</p>
     </div>
     
     <div class="input-group">
@@ -185,7 +185,7 @@
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري استخراج الروابط بداخل صفحتك حموديتي...</div>
+        <div style="margin-bottom: 10px;">جاري سحب البيانات حموديتي.. ثواني</div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
@@ -200,68 +200,89 @@
         const btn = document.getElementById('fetchBtn');
         const url = urlInput.value.trim();
 
-        if (!url) {
-            alert("وين الرابط حمودي؟");
-            return;
-        }
+        if (!url) { alert("وين الرابط حمودي؟"); return; }
 
         loader.style.display = "block";
         results.innerHTML = "";
         btn.disabled = true;
 
         try {
-            // محرك (AIO) يعمل عبر نظام Proxy لتجنب حظر الـ DNS في العراق
-            const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://count.to/api/video-info?url=' + url));
-            const data = await response.json();
-            const videoData = JSON.parse(data.contents);
+            // استخدام Cobalt API الأصلي مع إعدادات تمنع فتح المشغل
+            const response = await fetch('https://api.cobalt.tools/api/json', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url,
+                    videoQuality: '720',
+                    downloadMode: 'auto' // لضمان التحميل المباشر
+                })
+            });
 
-            if (videoData && videoData.links) {
-                let html = `
+            const data = await response.json();
+
+            if (data.url) {
+                // دالة لإجبار المتصفح على التحميل بدلاً من الفتح
+                const downloadName = "حمولة_حمودي_" + Date.now() + ".mp4";
+                
+                results.innerHTML = `
                     <div class="media-card">
-                        <h3 style="margin:0;">الروابط جاهزة بداخل صفحتك حموديتي ✅</h3>
-                        <p style="font-size:0.9rem; color:#64748b; margin-bottom:15px;">اختار الجودة وحمل مباشرة بدون مغادرة الصفحة:</p>
-                        <div id="downloadList">`;
-                
-                videoData.links.forEach(dl => {
-                    html += `
+                        <h3 style="margin:0; text-align:center;">الشغل جاهز حموديتي ✅</h3>
+                        <p style="font-size:0.9rem; color:#64748b; text-align:center;">اضغط على الزر أدناه وسيبدأ التحميل فوراً</p>
                         <div class="download-item">
-                            <span class="format-label">${dl.quality} (${dl.type})</span>
-                            <a href="${dl.url}" class="btn-dl" target="_blank" download>Download</a>
-                        </div>`;
-                });
-                
-                html += `</div></div>`;
-                results.innerHTML = html;
+                            <span class="format-label">فيديو بجودة عالية</span>
+                            <a href="${data.url}" class="btn-dl" onclick="forceDownload(event, '${data.url}', '${downloadName}')">بدء التحميل المباشر</a>
+                        </div>
+                    </div>`;
             } else {
-                throw new Error("No links");
+                throw new Error("No URL");
             }
         } catch (error) {
-            // حل بديل فوري (Fallback) باستخدام محرك Tikwm المفتوح (شغال بكل مكان)
-            try {
-                const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-                const tikData = await res.json();
-                if (tikData.data) {
-                    results.innerHTML = `
-                        <div class="media-card">
-                            <h3 style="margin:0;">تم السحب بنجاح حموديتي ✅</h3>
-                            <div class="download-item">
-                                <span class="format-label">فيديو بدون علامة مائية</span>
-                                <a href="${tikData.data.play}" class="btn-dl" target="_blank">Download</a>
-                            </div>
-                        </div>`;
-                } else { throw new Error(); }
-            } catch (e) {
-                results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">السيرفرات معاندة ويانا حمودي، تأكد من الرابط وجرب مرة ثانية عيوني.</div>`;
-            }
+            console.error('Error:', error);
+            results.innerHTML = `<div style="text-align:center; color: red; padding: 20px;">الرابط معاند حمودي، جرب سيرفر ثاني (Oceansaver) بالأسفل..</div>`;
+            // محاولة أخيرة بسيرفر احتياطي إذا فشل الكوبالت
+            tryFallback(url);
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
         }
     }
 
-    document.getElementById('urlInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') { fetchVideo(); }
-    });
+    // دالة إجبار التحميل المباشر (Force Download)
+    async function forceDownload(event, url, filename) {
+        event.preventDefault();
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+    }
+
+    async function tryFallback(url) {
+        const results = document.getElementById('results');
+        try {
+            const res = await fetch(`https://api.vkrdown.com/server?vurl=${encodeURIComponent(url)}`);
+            const data = await res.json();
+            if(data.data) {
+                results.innerHTML = `
+                    <div class="media-card">
+                        <h3 style="margin:0;">تم السحب عبر السيرفر الاحتياطي ✅</h3>
+                        <div class="download-item">
+                            <span class="format-label">الرابط المباشر</span>
+                            <a href="${data.data.downloads[0].url}" class="btn-dl" target="_blank">Download Now</a>
+                        </div>
+                    </div>`;
+            }
+        } catch (e) {
+            results.innerHTML += `<p style="text-align:center;">للأسف السيرفرات حالياً عليها حظر بمنطقتك حمودي.</p>`;
+        }
+    }
 </script>
 </body>
 </html>
