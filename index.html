@@ -3,213 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حمودي MP3 برو | Audio Portal 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <title>حمودي أوديو v30 | السرعة القصوى</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff007a; /* لون موسيقي وردي فاقع */
-            --secondary: #8a2be2;
-            --bg: #0b0b0e;
-            --card: #15151b;
-            --text: #ffffff;
-        }
-
+        :root { --main: #00ff88; --dark: #050505; --card: #111; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: var(--bg);
-            background-image: linear-gradient(45deg, #0b0b0e 0%, #1a1a2e 100%);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--dark); 
+            color: #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
         }
-
-        .container {
-            width: 100%;
-            max-width: 700px;
+        .wrapper {
+            width: 90%;
+            max-width: 600px;
             background: var(--card);
-            border-radius: 40px;
-            padding: 50px;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid #222;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -20%; right: -20%;
-            width: 300px; height: 300px;
-            background: var(--primary);
-            filter: blur(150px);
-            opacity: 0.15;
-            z-index: 0;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .input-group { margin: 40px 0; position: relative; z-index: 1; }
-
+        h1 { color: var(--main); font-size: 2.2rem; margin-bottom: 30px; font-weight: 900; }
         input {
             width: 100%;
-            padding: 22px 30px;
-            border-radius: 20px;
-            border: 2px solid #2a2a35;
-            background: #1e1e26;
-            color: #fff;
-            font-size: 1.1rem;
+            padding: 18px;
+            border-radius: 15px;
+            border: 2px solid #333;
+            background: #000;
+            color: var(--main);
+            font-size: 1rem;
             outline: none;
-            transition: 0.3s;
+            margin-bottom: 20px;
         }
-
-        input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(255, 0, 122, 0.2); }
-
         button {
             width: 100%;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 20px;
-            border: none;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.4s;
-        }
-
-        button:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 0, 122, 0.4); }
-
-        .loader { display: none; margin: 30px 0; }
-        .pulse-loader {
-            display: flex; justify-content: center; gap: 5px;
-        }
-        .pulse-loader div {
-            width: 8px; height: 30px; background: var(--primary);
-            animation: pulse 1s infinite ease-in-out;
-        }
-        @keyframes pulse { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(2); } }
-
-        .result-box {
-            margin-top: 40px;
-            background: #1e1e26;
-            padding: 30px;
-            border-radius: 25px;
-            border: 1px solid #333;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .dl-btn {
-            display: inline-block;
-            background: #22c55e;
-            color: #fff;
-            padding: 15px 40px;
+            padding: 18px;
             border-radius: 15px;
+            border: none;
+            background: var(--main);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .loader { display: none; margin: 20px 0; color: var(--main); font-weight: 700; }
+        .result { margin-top: 30px; padding: 20px; background: #1a1a1a; border-radius: 20px; display: none; }
+        .dl-link {
+            display: block;
+            background: #fff;
+            color: #000;
+            padding: 15px;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 700;
             margin-top: 15px;
-            transition: 0.3s;
         }
-
-        .dl-btn:hover { background: #16a34a; transform: scale(1.05); }
-
-        .footer { margin-top: 30px; font-size: 0.8rem; color: #555; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>حمودي MP3 بورتال 🎵</h1>
-        <p>استخراج الصوت بجودة عالية | نسخة 2026</p>
-    </div>
-
-    <div class="input-group">
-        <input type="text" id="audioUrl" placeholder="الصق رابط (YouTube, SoundCloud, TikTok)...">
-        <button onclick="getAudio()">استخراج الصوت الآن</button>
-    </div>
-
-    <div id="loader" class="loader">
-        <div class="pulse-loader">
-            <div style="animation-delay: -0.4s"></div>
-            <div style="animation-delay: -0.2s"></div>
-            <div></div>
-        </div>
-        <p style="margin-top:15px; color:var(--primary);">جاري معالجة الملف الصوتي...</p>
-    </div>
-
-    <div id="result"></div>
-
-    <div class="footer">
-        برمجة خاصة لمحمديتي | لا حاجة لبطاقة ائتمان
+<div class="wrapper">
+    <h1>صوتيات حمودي 🔱</h1>
+    <input type="text" id="url" placeholder="انسخ رابط اليوتيوب هنا...">
+    <button onclick="fetchAudio()">سحب ملف الـ MP3</button>
+    
+    <div id="loading" class="loader">جاري اختراق السيرفر وسحب الصوت...</div>
+    
+    <div id="resBox" class="result">
+        <p id="title" style="margin-bottom: 10px; color: var(--main);"></p>
+        <a id="downloadBtn" href="#" class="dl-link" target="_blank">اضغط هنا للتحميل المباشر</a>
     </div>
 </div>
 
 <script>
-    const WORKER = "https://dw.hurhar.workers.dev/";
+    async function fetchAudio() {
+        const urlInput = document.getElementById('url').value;
+        const loading = document.getElementById('loading');
+        const resBox = document.getElementById('resBox');
+        const dlBtn = document.getElementById('downloadBtn');
 
-    async function getAudio() {
-        const input = document.getElementById('audioUrl');
-        const resDiv = document.getElementById('result');
-        const loader = document.getElementById('loader');
-        const url = input.value.trim();
+        if(!urlInput) return alert("حمودي، الرابط وين؟");
 
-        if(!url) return;
-
-        resDiv.innerHTML = "";
-        loader.style.display = "block";
+        loading.style.display = "block";
+        resBox.style.display = "none";
 
         try {
-            const response = await fetch(WORKER, {
+            // استخدام API محرك Cobalt العالمي - بدون وسيط
+            const response = await fetch('https://api.cobalt.tools/api/json', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url })
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: urlInput,
+                    isAudioOnly: true, // هنا السحر، يسحب بس صوت
+                    aFormat: 'mp3',
+                    vQuality: '720'
+                })
             });
 
             const data = await response.json();
 
-            // فحص وجود روابط صوتية
-            let audioLink = "";
-            if (data.links) {
-                // البحث عن MP3 أو Audio
-                const audioObj = data.links.find(l => l.type === 'audio' || l.format === 'mp3' || l.extension === 'mp3');
-                audioLink = audioObj ? audioObj.link : data.links[0].link;
-            } else if (data.url) {
-                audioLink = data.url;
-            }
-
-            if(audioLink) {
-                resDiv.innerHTML = `
-                    <div class="result-box">
-                        <p style="margin-bottom:15px; font-weight:700;">تم استخراج الملف الصوتي بنجاح! 🎧</p>
-                        <audio controls style="width:100%; margin-bottom:15px;">
-                            <source src="${audioLink}" type="audio/mpeg">
-                        </audio>
-                        <a href="${audioLink}" class="dl-btn" target="_blank" download="hamoudi-audio.mp3">تحميل MP3 المباشر</a>
-                    </div>`;
+            if(data.url) {
+                dlBtn.href = data.url;
+                document.getElementById('title').innerText = "تم تجهيز الملف الصوتي!";
+                resBox.style.display = "block";
             } else {
-                throw new Error("المحرك ما لگه ملف صوتي بهذا الرابط.");
+                throw new Error("السيرفر رفض الطلب، جرب رابط ثاني.");
             }
-
-        } catch (e) {
-            resDiv.innerHTML = `<div style="color:#ff4d4d; margin-top:20px;">يا ستار! ${e.message}</div>`;
+        } catch (err) {
+            alert("يا ستار! " + err.message);
         } finally {
-            loader.style.display = "none";
+            loading.style.display = "none";
         }
     }
 </script>
