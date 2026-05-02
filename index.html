@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v5 محمل حمودي الأسطوري | Universal Downloader</title>
+    <title>v6 محمل حمودي الذكي | Universal Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -114,7 +114,7 @@
             flex-direction: column;
             gap: 15px;
             background: #fafafa;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
@@ -140,20 +140,21 @@
         }
 
         .btn-dl {
-            padding: 12px 24px;
+            padding: 10px 20px;
             background: var(--accent);
             color: white;
             text-decoration: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            transition: transform 0.2s, opacity 0.2s;
-            display: inline-block;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-dl:hover {
             transform: translateY(-2px);
-            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         @media (max-width: 600px) {
@@ -166,17 +167,17 @@
 
 <div class="container">
     <div class="header">
-        <h1>تحميل حمودي الأسطوري 🚀</h1>
-        <p>يوتيوب، تيك توك، انستا.. كله شغال هسة!</p>
+        <h1>تحميل حمودي الذكي 🚀</h1>
+        <p>انسخ الرابط وشوف السحر بداخل صفحتك!</p>
     </div>
     
     <div class="input-group">
-        <input type="text" id="urlInput" placeholder="حط الرابط هنا يا بطل...">
-        <button id="fetchBtn" onclick="fetchInfo()">تحليل وتحميل</button>
+        <input type="text" id="urlInput" placeholder="حط رابط يوتيوب، تيك توك، انستا...">
+        <button id="fetchBtn" onclick="fetchVideo()">تحليل الرابط</button>
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري تجهيز رابط التحميل حموديتي...</div>
+        <div style="margin-bottom: 10px;">جاري سحب الملف بداخل صفحتك، اصبرلي حموديتي...</div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
@@ -184,12 +185,11 @@
 </div>
 
 <script>
-    function fetchInfo() {
+    async function fetchVideo() {
         const urlInput = document.getElementById('urlInput');
-        const results = document.getElementById('results');
         const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
         const btn = document.getElementById('fetchBtn');
-
         const url = urlInput.value.trim();
 
         if (!url) {
@@ -201,36 +201,42 @@
         results.innerHTML = "";
         btn.disabled = true;
 
-        // الطريقة الذهبية: استخدام محرك SS المتجاوز للقيود لضمان عمل اليوتيوب والتيك توك
-        setTimeout(() => {
-            const finalDownloadUrl = url.replace(/(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|tiktok\.com|instagram\.com)\//, "https://ss$3/");
+        try {
+            // استخدام محرك API بديل يدعم الطلبات المباشرة ويحل مشكلة CORS واليوتيوب
+            // رح نستخدم نظام iframe الذكي بداخل كارت النتائج حتى ما تطلع من صفحتك
+            const cleanUrl = url.split('?')[0];
             
-            // في حال لم ينجح الاستبدال التلقائي، نستخدم الواجهة المباشرة
-            const fallbackUrl = "https://savefrom.net/?url=" + encodeURIComponent(url);
-
             results.innerHTML = `
                 <div class="media-card">
                     <div class="media-info">
                         <div class="media-details">
-                            <h3>جاهز للتحميل يا ملك 👑</h3>
-                            <p style="color:#64748b; margin-bottom:15px;">اضغط على الزر أدناه وسيتم توجيهك لصفحة اختيار الجودة مباشرة.</p>
-                            <div class="download-btns">
-                                <a href="${fallbackUrl}" class="btn-dl" target="_blank" rel="noopener noreferrer">
-                                     إضغط هنا واختار الجودة (Download)
-                                </a>
+                            <h3>الرابط جاهز للتحميل ✅</h3>
+                            <p style="font-size:0.9rem; color:#64748b;">اختر الجودة اللي تناسبك من القائمة أدناه واضغط Download:</p>
+                            
+                            <div id="downloadArea" style="width:100%; min-height:250px; margin-top:15px; border-radius:12px; overflow:hidden;">
+                                <!-- استدعاء واجهة التحميل بداخل الـ Card مالتك وبدون تحويل خارجي -->
+                                <iframe 
+                                    src="https://loader.to/api/card/?url=${encodeURIComponent(url)}&color=2563eb" 
+                                    style="width:100%; height:250px; border:none;" 
+                                    scrolling="no">
+                                </iframe>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            
+
+        } catch (error) {
+            console.error('Error:', error);
+            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">صار خلل بالتحليل، تأكد من الرابط وجرب مرة ثانية حمودي!</div>`;
+        } finally {
             loader.style.display = "none";
             btn.disabled = false;
-        }, 1000);
+        }
     }
 
     document.getElementById('urlInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') { fetchInfo(); }
+        if (e.key === 'Enter') { fetchVideo(); }
     });
 </script>
 </body>
