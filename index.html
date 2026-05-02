@@ -3,113 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v24 محمل حمودي الخارق | Ultra Downloader</title>
+    <title>v25 محمل حمودي | الرهيب</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00d2ff; --secondary: #3a7bd5; --bg: #0f0f0f; --card: #1a1a1a; --text: #efefef; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        .card { background: var(--card); width: 100%; max-width: 600px; padding: 40px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid #333; text-align: center; }
-        h1 { background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; margin-bottom: 5px; }
-        .input-box { margin: 30px 0; position: relative; }
-        input { width: 100%; padding: 18px 25px; border-radius: 15px; border: 2px solid #333; background: #222; color: #fff; font-size: 1rem; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px rgba(0,210,255,0.2); }
-        button { width: 100%; padding: 16px; margin-top: 15px; border-radius: 15px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: #000; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        button:hover { transform: translateY(-3px); opacity: 0.9; }
-        button:disabled { background: #444; transform: none; }
-        .loader { display: none; margin: 20px 0; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .result-area { margin-top: 30px; animation: slideUp 0.5s ease; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .dl-link { display: block; background: #22c55e; color: #fff; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: 700; margin-top: 10px; }
-        .error { color: #ef4444; background: #2a1515; padding: 15px; border-radius: 12px; border: 1px solid #ef4444; }
+        :root { --primary: #00d2ff; --bg: #0f0f0f; --card: #1a1a1a; --text: #efefef; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+        .card { background: var(--card); width: 100%; max-width: 550px; padding: 40px; border-radius: 25px; border: 1px solid #333; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: var(--primary); margin-bottom: 25px; font-size: 1.8rem; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #333; background: #222; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: #000; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.8; transform: scale(0.98); }
+        .loader { display: none; margin-top: 20px; color: var(--primary); }
+        .result-box { margin-top: 25px; padding: 15px; border-radius: 12px; background: #252525; border: 1px dashed var(--primary); }
+        .dl-btn { display: block; background: #22c55e; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 10px; }
+        .err { color: #ff5555; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>محمل حمودي الخارق ⚡</h1>
-    <p style="color: #888;">إصدار 2026 - المحرك الذكي v24</p>
-
-    <div class="input-box">
-        <input type="text" id="urlInput" placeholder="الصق رابط الفيديو (YT, TikTok, FB, IG)...">
-        <button id="btn" onclick="process()">تحميل الآن</button>
-    </div>
-
-    <div id="loader" class="loader">
-        <div class="spinner"></div>
-        <p>جاري كسر حماية الرابط وسحب الفيديو...</p>
-    </div>
-
+    <h1>محمل حمودي v25 🚀</h1>
+    <input type="text" id="urlInput" placeholder="حط الرابط هنا يا بطل...">
+    <button id="btn" onclick="startDownload()">تحميل الفيديو</button>
+    
+    <div id="loader" class="loader">جاري السحب... انتظرني حمودي</div>
     <div id="result"></div>
 </div>
 
 <script>
     const WORKER = "https://dw.hurhar.workers.dev/";
 
-    async function process() {
-        const urlInput = document.getElementById('urlInput');
-        const url = urlInput.value.trim();
+    async function startDownload() {
+        const url = document.getElementById('urlInput').value.trim();
         const resDiv = document.getElementById('result');
         const loader = document.getElementById('loader');
-        const btn = document.getElementById('btn');
-
-        if(!url) {
-            resDiv.innerHTML = `<div class="error">محمديتي، نسيت تحط الرابط!</div>`;
-            return;
-        }
-
+        
+        if(!url) return;
         resDiv.innerHTML = "";
         loader.style.display = "block";
-        btn.disabled = true;
 
         try {
-            const response = await fetch(WORKER, {
+            const resp = await fetch(WORKER, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ url })
             });
             
-            const data = await response.json();
+            const data = await resp.json();
+            if(data.error) throw new Error(data.message);
 
-            // فحص كل الاحتمالات لردود الـ API المختلفة لعام 2026
-            let finalDownloadUrl = "";
+            // استخراج الرابط حسب استجابة المحرك v25
+            const videoUrl = data.data?.url || data.url || (data.links && data.links[0]?.link);
 
-            if (data.url) {
-                finalDownloadUrl = data.url;
-            } else if (data.result && data.result.url) {
-                finalDownloadUrl = data.result.url;
-            } else if (data.links && data.links.length > 0) {
-                finalDownloadUrl = data.links[0].link;
-            } else if (data.data && data.data.main_url) {
-                finalDownloadUrl = data.data.main_url;
-            }
-
-            if (finalDownloadUrl) {
+            if(videoUrl) {
                 resDiv.innerHTML = `
-                    <div class="result-area">
-                        <p style="color: var(--primary); font-weight:700;">تم التحليل بنجاح! ✅</p>
-                        <a href="${finalDownloadUrl}" class="dl-link" target="_blank" rel="noopener noreferrer">اضغط هنا للتحميل المباشر</a>
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">محمديتي، إذا ما بدأ التحميل، دوس يمين وحفظ باسم.</p>
+                    <div class="result-box">
+                        <p>تم استخراج الفيديو بنجاح! ✅</p>
+                        <a href="${videoUrl}" class="dl-btn" target="_blank">اضغط هنا للتحميل</a>
                     </div>`;
             } else {
-                throw new Error(data.message || "المحرك مديگدر يلقى رابط الفيديو، يمكن الرابط خاص أو محمي.");
+                throw new Error("المحرك ما رجع رابط مباشر، جرب مرة ثانية");
             }
-
-        } catch (e) {
-            resDiv.innerHTML = `<div class="error">يا ستار! صار خلل: ${e.message}</div>`;
+        } catch(e) {
+            resDiv.innerHTML = `<div class="err">يا ستار! ${e.message}</div>`;
         } finally {
             loader.style.display = "none";
-            btn.disabled = false;
         }
     }
-
-    // إضافة دعم التحميل عند الضغط على Enter
-    document.getElementById('urlInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            process();
-        }
-    });
 </script>
 </body>
 </html>
