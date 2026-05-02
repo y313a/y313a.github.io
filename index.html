@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v25 محمل حمودي | الرهيب</title>
+    <title>v26 محمل حمودي الفولاذي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00d2ff; --bg: #0f0f0f; --card: #1a1a1a; --text: #efefef; }
@@ -16,17 +16,15 @@
         .loader { display: none; margin-top: 20px; color: var(--primary); }
         .result-box { margin-top: 25px; padding: 15px; border-radius: 12px; background: #252525; border: 1px dashed var(--primary); }
         .dl-btn { display: block; background: #22c55e; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 10px; }
-        .err { color: #ff5555; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>محمل حمودي v25 🚀</h1>
-    <input type="text" id="urlInput" placeholder="حط الرابط هنا يا بطل...">
-    <button id="btn" onclick="startDownload()">تحميل الفيديو</button>
-    
-    <div id="loader" class="loader">جاري السحب... انتظرني حمودي</div>
+    <h1>محمل حمودي v26 🚀</h1>
+    <input type="text" id="urlInput" placeholder="الصق الرابط هنا...">
+    <button id="btn" onclick="startDownload()">تحميل الآن</button>
+    <div id="loader" class="loader">جاري الاتصال بسيرفر الطوارئ...</div>
     <div id="result"></div>
 </div>
 
@@ -50,22 +48,21 @@
             });
             
             const data = await resp.json();
-            if(data.error) throw new Error(data.message);
-
-            // استخراج الرابط حسب استجابة المحرك v25
-            const videoUrl = data.data?.url || data.url || (data.links && data.links[0]?.link);
+            
+            // قراءة الرابط من محرك الطوارئ الجديد
+            let videoUrl = data.url || (data.data && data.data.video) || (data.links && data.links[0]?.link);
 
             if(videoUrl) {
                 resDiv.innerHTML = `
                     <div class="result-box">
-                        <p>تم استخراج الفيديو بنجاح! ✅</p>
-                        <a href="${videoUrl}" class="dl-btn" target="_blank">اضغط هنا للتحميل</a>
+                        <p>عاش حمودي! الفيديو جاهز ✅</p>
+                        <a href="${videoUrl}" class="dl-btn" target="_blank" rel="noopener noreferrer">اضغط هنا للتحميل</a>
                     </div>`;
             } else {
-                throw new Error("المحرك ما رجع رابط مباشر، جرب مرة ثانية");
+                throw new Error("السيرفر مديجاوب، جرب غير رابط");
             }
         } catch(e) {
-            resDiv.innerHTML = `<div class="err">يا ستار! ${e.message}</div>`;
+            resDiv.innerHTML = `<div style="color:#ff5555; margin-top:15px;">يا ستار! ${e.message}</div>`;
         } finally {
             loader.style.display = "none";
         }
