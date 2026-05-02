@@ -76,4 +76,4 @@ async def get_video_info(request: DownloadRequest):
 if __name__ == "__main__":
     import uvicorn
     # هذا البورت اللي راح يشتغل عليه السيرفر محلياً أو على ريندر
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=7860)
