@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v22 محمل حمودي الذكي | Cobalt v10 Edition</title>
+    <title>v22 محمل حمودي الذكي | Cobalt v10 Stable</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,10 +17,7 @@
             --danger: #cf6679;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Cairo', sans-serif;
@@ -32,7 +29,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            line-height: 1.6;
         }
 
         .container {
@@ -43,134 +39,47 @@
             border-radius: 24px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             margin-top: 40px;
+            border: 1px solid #333;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { color: var(--primary); font-size: 2.3rem; margin: 0; text-shadow: 0 2px 10px rgba(187,134,252,0.2); }
+        .header p { color: #a1a1aa; font-size: 1rem; }
 
-        .header h1 {
-            color: var(--primary);
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            text-shadow: 0 2px 10px rgba(187, 134, 252, 0.3);
-        }
-
-        .header p {
-            color: #a1a1aa;
-            font-size: 1.1rem;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
+        .input-group { display: flex; gap: 12px; margin-bottom: 25px; }
         input {
-            flex: 1;
-            padding: 18px 24px;
-            border: 2px solid #333;
-            border-radius: 16px;
-            outline: none;
-            font-size: 1rem;
-            font-family: 'Cairo', sans-serif;
-            background: #2c2c2c;
-            color: #fff;
-            transition: all 0.3s;
+            flex: 1; padding: 18px; border: 2px solid #333; border-radius: 16px;
+            background: #2c2c2c; color: #fff; font-family: inherit; transition: 0.3s;
         }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(187, 134, 252, 0.1);
-        }
+        input:focus { border-color: var(--primary); outline: none; }
 
         button#fetchBtn {
-            padding: 0 32px;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            padding: 0 30px; background: var(--primary); color: #000; border: none;
+            border-radius: 16px; cursor: pointer; font-weight: 700; transition: 0.3s;
         }
+        button#fetchBtn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        button#fetchBtn:disabled { background: #444; cursor: not-allowed; }
 
-        button#fetchBtn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        button#fetchBtn:disabled {
-            background: #444;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 30px;
-        }
-
+        .loader { display: none; text-align: center; padding: 20px; }
         .loader-spinner {
-            width: 45px;
-            height: 45px;
-            border: 4px solid #333;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            width: 40px; height: 40px; border: 4px solid #333; border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #results { margin-top: 30px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .media-card {
-            border: 1px solid #333;
-            padding: 24px;
-            border-radius: 20px;
-            background: #2c2c2c;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
+            background: #2c2c2c; padding: 25px; border-radius: 20px; text-align: center;
+            border: 1px solid var(--accent); animation: fadeIn 0.4s;
         }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .btn-dl {
-            display: block;
-            margin-top: 15px;
-            padding: 16px;
-            background: var(--accent);
-            color: #000;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 700;
-            transition: all 0.3s;
+            display: inline-block; width: 100%; padding: 16px; background: var(--accent);
+            color: #000; text-decoration: none; border-radius: 12px; font-weight: 700; margin-top: 15px;
         }
+        .error-card { background: #451a1a; color: #ff8080; padding: 20px; border-radius: 16px; border: 1px solid var(--danger); }
 
-        .btn-dl:hover {
-            background: #00b3a6;
-            transform: scale(1.02);
-        }
-
-        .error-card {
-            background: #451a1a;
-            border: 1px solid var(--danger);
-            padding: 20px;
-            border-radius: 16px;
-            color: #ff8080;
-            text-align: center;
-        }
-
-        @media (max-width: 600px) {
-            .input-group { flex-direction: column; }
-            button#fetchBtn { padding: 18px; }
-            .header h1 { font-size: 2rem; }
-        }
+        @media (max-width: 600px) { .input-group { flex-direction: column; } button#fetchBtn { padding: 18px; } }
     </style>
 </head>
 <body>
@@ -178,101 +87,92 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>النسخة v21 - تحديث Cobalt v10 (تجاوز الـ CORS)</p>
+        <p>النسخة المستقرة v22 | Cobalt v10 Engine</p>
     </div>
     
     <div class="input-group">
-        <input type="text" id="urlInput" placeholder="الصق رابط (YouTube, TikTok, Instagram)...">
+        <input type="text" id="urlInput" placeholder="أدخل رابط الفيديو هنا...">
         <button id="fetchBtn" onclick="fetchMedia()">تحليل الرابط</button>
     </div>
 
     <div id="loader" class="loader">
         <div class="loader-spinner"></div>
-        <div id="statusText" style="font-weight: bold; color: var(--primary);">جاري التواصل مع السيرفر وتخطي الحظر...</div>
+        <div style="color: var(--primary);">جاري كسر القيود وسحب الرابط...</div>
     </div>
 
     <div id="results"></div>
 </div>
 
 <script>
-    // رابط الوركر مالتك - تم التأكد منه
     const WORKER_URL = "https://dw.hurhar.workers.dev/";
 
     async function fetchMedia() {
-        const urlInput = document.getElementById('urlInput');
+        const input = document.getElementById('urlInput');
         const loader = document.getElementById('loader');
         const results = document.getElementById('results');
         const btn = document.getElementById('fetchBtn');
-        const url = urlInput.value.trim();
-
-        if (!url) {
-            showError("محمديتي، الرابط وين؟ لا تعبني حطه بالحقل!");
+        
+        if (!input.value.trim()) {
+            showError("محمديتي، الحقل فارغ! حط الرابط فدوة لشاربك.");
             return;
         }
 
-        // تصفير واجهة النتائج
         loader.style.display = "block";
         results.innerHTML = "";
         btn.disabled = true;
 
         try {
-            const response = await fetch(WORKER_URL, {
+            const resp = await fetch(WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url })
+                body: JSON.stringify({ url: input.value.trim() })
             });
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.text || `خطأ سيرفر: ${response.status}`);
-            }
+            // التحقق إذا كان الوركر نفسه شغال
+            if (!resp.ok) throw new Error(`السيرفر (الوركر) مديجاوب. كود الخطأ: ${resp.status}`);
 
-            const data = await response.json();
+            const data = await resp.json();
 
-            // معالجة استجابة Cobalt v10 الجديدة
+            // معالجة رد Cobalt v10
             if (data.status === 'error') {
-                throw new Error(data.text || "السيرفر رفض الرابط، جرب غير واحد.");
+                // إذا طلع خطأ من Cobalt نفسه
+                throw new Error(data.text || "Cobalt رفض الطلب. جرب غير رابط أو انتظر شوية.");
             }
 
-            // v10 يرجع الرابط مباشرة بـ data.url أو بداخل الـ picker
+            let finalUrl = "";
             if (data.url) {
-                displayResults("الفيديو جاهز للتحميل بنجاح 🎉", data.url);
+                finalUrl = data.url;
             } else if (data.status === 'picker' && data.picker && data.picker.length > 0) {
-                // في حال وجود عدة جودات أو عدة صور/فيديوهات
-                displayResults("تم العثور على محتوى متعدد، جاري سحب الرابط الرئيسي", data.picker[0].url);
+                finalUrl = data.picker[0].url;
             } else if (data.status === 'redirect' && data.url) {
-                 displayResults("تم استخراج الرابط المباشر", data.url);
-            } else {
-                throw new Error("السيرفر ما گدر يحصل رابط مباشر، يمكن الفيديو محمي.");
+                finalUrl = data.url;
             }
 
-        } catch (error) {
-            showError(error.message);
+            if (finalUrl) {
+                results.innerHTML = `
+                    <div class="media-card">
+                        <div style="color: var(--accent); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px;">تم تجهيز الرابط بنجاح! 🎉</div>
+                        <p style="font-size: 0.9rem; color: #ccc;">اضغط على الزر أدناه لبدء التحميل المباشر.</p>
+                        <a href="${finalUrl}" class="btn-dl" target="_blank" rel="noopener noreferrer">تحميل الفيديو الآن</a>
+                        <p style="margin-top: 15px; font-size: 0.75rem; color: #888;">ملاحظة: إذا فتح الفيديو بمتصفحك، اضغط مطولاً واختار "حفظ الفيديو".</p>
+                    </div>`;
+            } else {
+                throw new Error("مالقينا رابط مباشر بالرد. السيرفر يمكن محظور مؤقتاً.");
+            }
+
+        } catch (err) {
+            showError(err.message);
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
         }
     }
 
-    function displayResults(title, downloadUrl) {
-        const results = document.getElementById('results');
-        results.innerHTML = `
-            <div class="media-card">
-                <div style="font-weight: 700; margin-bottom: 10px; color: var(--accent); font-size: 1.2rem;">${title}</div>
-                <p style="color: #a1a1aa; font-size: 0.95rem; margin-bottom: 20px;">تم استخراج الفيديو بأعلى جودة ممكنة (تجاوز حظر الـ DNS بنجاح)</p>
-                <a href="${downloadUrl}" class="btn-dl" target="_blank" rel="noopener noreferrer">اضغط هنا للتحميل المباشر</a>
-                <p style="margin-top: 15px; font-size: 0.8rem; color: #666;">إذا انفتح الفيديو بصفحة ثانية، دوس عليه "حفظ باسم" (Save As)</p>
-            </div>`;
-    }
-
     function showError(msg) {
-        const results = document.getElementById('results');
-        // تنظيف الرسائل التقنية الطويلة من Cobalt v7 القديم إذا ظهرت
-        let userMsg = msg;
-        if (msg.includes("v7 api has been shut down")) {
-            userMsg = "عيني حمودي، لازم تحدث كود الوركر (Worker) بـ كلاودفلير للنسخة v10 مثل ما شرحتلك!";
-        }
-        results.innerHTML = `<div class="error-card"><strong>خلل تقني:</strong><br>${userMsg}</div>`;
+        document.getElementById('results').innerHTML = `
+            <div class="error-card">
+                <strong>عذراً حمودي:</strong><br>${msg}
+            </div>`;
     }
 
     document.getElementById('urlInput').addEventListener('keypress', (e) => {
