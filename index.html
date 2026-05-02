@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v16 محمل حمودي العالمي | The Final Solution</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>v17 محمل حمودي الذكي | Rapid Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
-            --bg: #f8fafc;
+            --primary-hover: #1d4ed8;
+            --bg: #f1f5f9;
             --card: #ffffff;
-            --text: #1e293b;
-            --accent: #059669;
+            --text: #0f172a;
+            --accent: #10b981;
         }
 
         body {
@@ -21,159 +23,233 @@
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 650px;
+            max-width: 700px;
             width: 100%;
             background: var(--card);
-            padding: 35px;
-            border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            margin-top: 40px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
         }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: var(--primary); margin: 0; font-size: 2rem; }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
 
         .input-group {
             display: flex;
-            gap: 10px;
-            background: #f1f5f9;
-            padding: 8px;
-            border-radius: 16px;
-            border: 2px solid #e2e8f0;
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
         input {
             flex: 1;
-            border: none;
-            background: transparent;
-            padding: 12px;
-            font-family: 'Cairo';
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             outline: none;
             font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
         }
 
         button {
+            padding: 15px 30px;
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 25px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: background 0.3s;
         }
 
-        button:hover { opacity: 0.9; transform: scale(1.02); }
-        button:disabled { background: #94a3b8; }
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
 
         .loader {
             display: none;
             text-align: center;
-            margin: 20px 0;
-            color: var(--primary);
+            padding: 20px;
             font-weight: bold;
+            color: var(--primary);
         }
 
-        #results { margin-top: 25px; }
+        #results {
+            margin-top: 30px;
+            display: grid;
+            gap: 20px;
+        }
 
         .media-card {
-            background: #f0fdf4;
-            border: 2px solid #bcf0da;
+            border: 1px solid #e2e8f0;
             padding: 20px;
-            border-radius: 18px;
-            text-align: center;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #fafafa;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        .download-btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 12px 30px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .download-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 8px;
+            transition: 0.2s;
+        }
+
+        .download-item:hover {
+            border-color: var(--primary);
+        }
+
+        .format-label {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .btn-dl {
+            padding: 10px 20px;
             background: var(--accent);
             color: white;
             text-decoration: none;
-            border-radius: 12px;
-            font-weight: bold;
-            transition: 0.3s;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
-        .download-btn:hover { box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.4); }
+        .btn-dl:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .input-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>محمل حمودي الذكي v16 🚀</h1>
-        <p>هالمرة الشغل نظيف وبدون بروكسيات تعبانة!</p>
+        <h1>تحميل حمودي الذكي 🚀</h1>
+        <p>النسخة v17 - محرك Snap المباشر (RapidAPI)</p>
     </div>
-
+    
     <div class="input-group">
-        <input type="text" id="urlInput" placeholder="حط رابط يوتيوب أو تيك توك هنا...">
-        <button id="fetchBtn" onclick="processVideo()">تحليل</button>
+        <input type="text" id="urlInput" placeholder="حط رابط يوتيوب، تيك توك، انستا...">
+        <button id="fetchBtn" onclick="fetchVideo()">تحليل الرابط</button>
     </div>
 
-    <div id="loader" class="loader">جاري جلب الرابط المباشر حموديتي... ⏳</div>
+    <div id="loader" class="loader">
+        <div style="margin-bottom: 10px;">جاري سحب البيانات حموديتي.. ثواني</div>
+        <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
+    </div>
+
     <div id="results"></div>
 </div>
 
 <script>
-    async function processVideo() {
-        const url = document.getElementById('urlInput').value.trim();
+    async function fetchVideo() {
+        const urlInput = document.getElementById('urlInput');
         const loader = document.getElementById('loader');
         const results = document.getElementById('results');
         const btn = document.getElementById('fetchBtn');
+        const url = urlInput.value.trim();
 
-        if (!url) return alert("وين الرابط يا بطل؟");
+        if (!url) { alert("وين الرابط حمودي؟"); return; }
 
         loader.style.display = "block";
         results.innerHTML = "";
         btn.disabled = true;
 
         try {
-            // استخدام Cobalt API الأصلي معHeaders تمنع الـ CORS
-            const response = await fetch('https://api.cobalt.tools/api/json', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: url,
-                    videoQuality: '720',
-                    filenamePattern: 'basic'
-                })
-            });
-
+            // المحرك الجديد: SnapTik API عبر وسيط مستقر جداً
+            const response = await fetch(`https://api.tikwm.com/api/?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
-            if (data.status === 'stream' || data.url) {
-                const finalUrl = data.url;
+            if (data.code === 0 && data.data) {
+                const videoData = data.data;
                 results.innerHTML = `
                     <div class="media-card">
-                        <h3 style="margin:0; color:#065f46;">تم السحب بنجاح! ✅</h3>
-                        <p>الفيديو جاهز للتحميل بداخل صفحتك</p>
-                        <a href="${finalUrl}" class="download-btn" target="_blank" download>اضغط هنا للتحميل المباشر</a>
+                        <h3 style="margin:0; text-align:center;">الشغل جاهز يا بطل ✅</h3>
+                        <div class="download-item">
+                            <span class="format-label">فيديو MP4 (بدون علامة)</span>
+                            <a href="${videoData.play}" class="btn-dl" target="_blank">تحميل مباشر</a>
+                        </div>
+                        ${videoData.music ? `
+                        <div class="download-item">
+                            <span class="format-label">صوت فقط MP3</span>
+                            <a href="${videoData.music}" class="btn-dl" target="_blank">تحميل الصوت</a>
+                        </div>` : ''}
                     </div>`;
-            } else if (data.status === 'error') {
-                throw new Error(data.text);
             } else {
-                throw new Error("حدث خطأ غير متوقع");
+                throw new Error("API Limit or Error");
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error:', error);
+            // حل بديل فوري إذا فشل المحرك الأول (محرك SaveFrom)
             results.innerHTML = `
-                <div style="padding:15px; background:#fef2f2; border:1px solid #fee2e2; border-radius:12px; color:#991b1b; text-align:center;">
-                    <b>خطأ بالسيرفر حمودي:</b> السيرفر عليه ضغط حالياً أو الرابط محمي. جرب مرة ثانية بعد ثواني.
+                <div class="media-card" style="border-color: #fca5a5; background: #fef2f2;">
+                    <h3 style="margin:0; color:#b91c1c;">عناد بالسيرفرات حمودي!</h3>
+                    <p style="font-size:0.9rem;">اضغط الزر تحت راح يحولك لصفحة التحميل المباشرة:</p>
+                    <a href="https://savefrom.net/?url=${encodeURIComponent(url)}" 
+                       class="btn-dl" style="background:#ef4444; text-align:center; display:block;">
+                       انتقل لصفحة التحميل
+                    </a>
                 </div>`;
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
         }
     }
+
+    document.getElementById('urlInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { fetchVideo(); }
+    });
 </script>
 </body>
 </html>
