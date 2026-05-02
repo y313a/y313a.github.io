@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محمل حمودي الذكي | Universal Downloader</title>
+    <!-- استدعاء خط كايرو للحصول على جمالية الخط العربي -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --accent: #10b981;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 15px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        #results {
+            margin-top: 30px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .media-card {
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #fafafa;
+        }
+
+        .media-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .media-card img {
+            width: 150px;
+            height: auto;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .media-details h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .download-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-dl {
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-dl:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-audio {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 600px) {
+            .input-group { flex-direction: column; }
+            .media-info { flex-direction: column; text-align: center; }
+            .media-card img { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>محمل حمودي الأسطوري 🚀</h1>
+        <p>انسخ رابط الفيديو وبشرني بالتحميل يا بطل</p>
+    </div>
+    
+    <div class="input-group">
+        <input type="text" id="urlInput" placeholder="حط الرابط هنا (يوتيوب، انستا، تيك توك...)">
+        <button id="fetchBtn" onclick="fetchInfo()">تحليل الرابط</button>
+    </div>
+
+    <div id="loader" class="loader">
+        <div style="margin-bottom: 10px;">جاري تحليل الرابط، اصبرلي شوية حموديتي...</div>
+        <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    // الرابط المباشر للسيرفر مالتك على Hugging Face
+    const API_BASE = "https://hurx-dw.hf.space"; 
+
+    async function fetchInfo() {
+        const urlInput = document.getElementById('urlInput');
+        const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
+        const btn = document.getElementById('fetchBtn');
+
+        const url = urlInput.value.trim();
+
+        if (!url) {
+            alert("وين الرابط حمودي؟ حطه بالمربع أول شي عيوني!");
+            return;
+        }
+
+        // إظهار اللودر وتعطيل الزر
+        loader.style.display = "block";
+        results.innerHTML = "";
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
+
+        try {
+            const response = await fetch(`${API_BASE}/get-info`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (!response.ok) throw new Error('السيرفر مارد علينا');
+
+            const resData = await response.json();
+
+            if (resData.success && resData.data.length > 0) {
+                resData.data.forEach(item => {
+                    // توليد أزرار الجودات المتاحة
+                    let formatsHtml = item.formats.map(f => {
+                        // تحويل الحجم إلى MB إذا كان متوفراً
+                        const size = f.size ? `(${(f.size / (1024 * 1024)).toFixed(1)} MB)` : '';
+                        return `
+                        <a href="${f.url}" class="btn-dl" target="_blank" download>
+                             تحميل ${f.quality} ${size}
+                        </a>`;
+                    }).join('');
+
+                    // إضافة زر الصوت إذا كان متوفراً
+                    if (item.audio_url) {
+                        formatsHtml += `
+                        <a href="${item.audio_url}" class="btn-dl btn-audio" target="_blank" download>
+                            تحميل صوت MP3 🎵
+                        </a>`;
+                    }
+
+                    results.innerHTML += `
+                        <div class="media-card">
+                            <div class="media-info">
+                                <img src="${item.thumbnail || 'https://via.placeholder.com/150'}" alt="thumbnail">
+                                <div class="media-details">
+                                    <h3>${item.title}</h3>
+                                    <div class="download-btns">${formatsHtml}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                results.innerHTML = `
+                    <div style="text-align:center; color: #ef4444; padding: 20px;">
+                        للأسف ما گدرت أحلل هذا الرابط، تأكد منه أو جرب غير واحد!
+                    </div>`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            results.innerHTML = `
+                <div style="text-align:center; color: #ef4444; padding: 20px;">
+                    صار خلل بالاتصال بالسيرفر. تأكد إن الـ Space مالتك بوضع الـ (Running).
+                </div>`;
+        } finally {
+            loader.style.display = "none";
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        }
+    }
+
+    // السماح بالضغط على Enter للبحث
+    document.getElementById('urlInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            fetchInfo();
+        }
+    });
+</script>
+
+</body>
+</html>
