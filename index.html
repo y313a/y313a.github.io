@@ -171,7 +171,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>محمل حمودي الأسطوري 🚀</h1>
+        <h1>تحميل حمودي الأسطوري 🚀</h1>
         <p>انسخ رابط الفيديو وبشرني بالتحميل يا بطل</p>
     </div>
     
@@ -189,7 +189,6 @@
 </div>
 
 <script>
-    // الرابط المباشر للسيرفر مالتك على Hugging Face مع التأكد من البروتوكول
     const API_BASE = "https://hurx-dw.hf.space"; 
 
     async function fetchInfo() {
@@ -205,14 +204,13 @@
             return;
         }
 
-        // إظهار اللودر وتعطيل الزر
         loader.style.display = "block";
         results.innerHTML = "";
         btn.disabled = true;
         btn.style.opacity = "0.6";
 
         try {
-            // إضافة السلاش بنهاية get-info/ لضمان استجابة السيرفر وتجاوز حماية CORS
+            // التعديل هنا لضمان عبور الطلب بشكل سليم عبر CORS
             const response = await fetch(`${API_BASE}/get-info/`, {
                 method: 'POST',
                 headers: {
@@ -228,19 +226,17 @@
 
             if (resData.success && resData.data.length > 0) {
                 resData.data.forEach(item => {
-                    // توليد أزرار الجودات المتاحة
                     let formatsHtml = item.formats.map(f => {
                         const size = f.size ? `(${(f.size / (1024 * 1024)).toFixed(1)} MB)` : '';
                         return `
-                        <a href="${f.url}" class="btn-dl" target="_blank" download>
+                        <a href="${f.url}" class="btn-dl" target="_blank" download rel="noopener noreferrer">
                              تحميل ${f.quality} ${size}
                         </a>`;
                     }).join('');
 
-                    // إضافة زر الصوت إذا كان متوفراً
                     if (item.audio_url) {
                         formatsHtml += `
-                        <a href="${item.audio_url}" class="btn-dl btn-audio" target="_blank" download>
+                        <a href="${item.audio_url}" class="btn-dl btn-audio" target="_blank" download rel="noopener noreferrer">
                             تحميل صوت MP3 🎵
                         </a>`;
                     }
@@ -258,18 +254,11 @@
                     `;
                 });
             } else {
-                results.innerHTML = `
-                    <div style="text-align:center; color: #ef4444; padding: 20px;">
-                        للأسف ما گدرت أحلل هذا الرابط، تأكد منه أو جرب غير واحد!
-                    </div>`;
+                results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط ما اتحلل، تأكد منه حمودي!</div>`;
             }
         } catch (error) {
             console.error('Error:', error);
-            results.innerHTML = `
-                <div style="text-align:center; color: #ef4444; padding: 20px;">
-                    صار خلل بالاتصال بالسيرفر. تأكد إن الـ Space مالتك بوضع الـ (Running)
-                    <br><small>أو جرب تفتح الموقع بمتصفح Chrome بدلاً من Brave</small>
-                </div>`;
+            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">صار خلل بالاتصال بالسيرفر. تأكد إن السبيس بوضع (Running)</div>`;
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
@@ -277,13 +266,11 @@
         }
     }
 
-    // السماح بالضغط على Enter للبحث
     document.getElementById('urlInput').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             fetchInfo();
         }
     });
 </script>
-
 </body>
 </html>
