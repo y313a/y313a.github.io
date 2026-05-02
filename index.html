@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v11 محمل حمودي الذكي | Universal Downloader</title>
+    <title>v12 محمل حمودي الذكي | Universal Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -176,29 +176,24 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>النسخة v11 - الحل النهائي المستقر</p>
+        <p>انسخ الرابط وشوف الشغل المعدل بداخل صفحتك!</p>
     </div>
     
     <div class="input-group">
         <input type="text" id="urlInput" placeholder="حط رابط يوتيوب، تيك توك، انستا...">
-        <button id="fetchBtn" onclick="fetchVideo()">تحميل الآن</button>
+        <button id="fetchBtn" onclick="fetchVideo()">تحليل الرابط</button>
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري تجهيز صفحة التحميل الآمنة، ثواني حموديتي...</div>
+        <div style="margin-bottom: 10px;">جاري استخراج الروابط بداخل صفحتك حموديتي...</div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
     <div id="results"></div>
 </div>
 
-<!-- فورم مخفي للإرسال الآمن -->
-<form id="downloadForm" method="POST" action="https://savefrom.net/savefrom.php" target="_blank" style="display:none;">
-    <input type="hidden" name="url" id="formUrl">
-</form>
-
 <script>
-    function fetchVideo() {
+    async function fetchVideo() {
         const urlInput = document.getElementById('urlInput');
         const loader = document.getElementById('loader');
         const results = document.getElementById('results');
@@ -206,36 +201,62 @@
         const url = urlInput.value.trim();
 
         if (!url) {
-            alert("وين الرابط حمودي؟ حطه بالمربع أول شي عيوني!");
+            alert("وين الرابط حمودي؟");
             return;
         }
 
         loader.style.display = "block";
+        results.innerHTML = "";
         btn.disabled = true;
 
-        // الطريقة الأضمن: فتح محرك التحميل العالمي savefrom مع الرابط مباشرة
-        // هاي الطريقة تتجاوز كل مشاكل الـ DNS والـ CORS لأنها تعتمد على المحرك الأصلي
-        setTimeout(() => {
-            const downloadUrl = "https://savefrom.net/?url=" + encodeURIComponent(url);
-            
-            results.innerHTML = `
-                <div class="media-card">
-                    <h3 style="margin:0; text-align:center;">تم تجهيز المحرك بنجاح ✅</h3>
-                    <p style="font-size:0.9rem; color:#64748b; text-align:center; margin-bottom:15px;">
-                        حموديتي، راح تفتح نافذة التحميل العالمية، بس اختار الجودة وحمل:
-                    </p>
-                    <a href="${downloadUrl}" class="btn-dl" target="_blank" 
-                       style="display:block; text-align:center; padding:15px; background:var(--primary);">
-                       فتح صفحة التحميل المباشرة
-                    </a>
-                </div>`;
-            
+        try {
+            // محرك (AIO) يعمل عبر نظام Proxy لتجنب حظر الـ DNS في العراق
+            const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://count.to/api/video-info?url=' + url));
+            const data = await response.json();
+            const videoData = JSON.parse(data.contents);
+
+            if (videoData && videoData.links) {
+                let html = `
+                    <div class="media-card">
+                        <h3 style="margin:0;">الروابط جاهزة بداخل صفحتك حموديتي ✅</h3>
+                        <p style="font-size:0.9rem; color:#64748b; margin-bottom:15px;">اختار الجودة وحمل مباشرة بدون مغادرة الصفحة:</p>
+                        <div id="downloadList">`;
+                
+                videoData.links.forEach(dl => {
+                    html += `
+                        <div class="download-item">
+                            <span class="format-label">${dl.quality} (${dl.type})</span>
+                            <a href="${dl.url}" class="btn-dl" target="_blank" download>Download</a>
+                        </div>`;
+                });
+                
+                html += `</div></div>`;
+                results.innerHTML = html;
+            } else {
+                throw new Error("No links");
+            }
+        } catch (error) {
+            // حل بديل فوري (Fallback) باستخدام محرك Tikwm المفتوح (شغال بكل مكان)
+            try {
+                const res = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                const tikData = await res.json();
+                if (tikData.data) {
+                    results.innerHTML = `
+                        <div class="media-card">
+                            <h3 style="margin:0;">تم السحب بنجاح حموديتي ✅</h3>
+                            <div class="download-item">
+                                <span class="format-label">فيديو بدون علامة مائية</span>
+                                <a href="${tikData.data.play}" class="btn-dl" target="_blank">Download</a>
+                            </div>
+                        </div>`;
+                } else { throw new Error(); }
+            } catch (e) {
+                results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">السيرفرات معاندة ويانا حمودي، تأكد من الرابط وجرب مرة ثانية عيوني.</div>`;
+            }
+        } finally {
             loader.style.display = "none";
             btn.disabled = false;
-            
-            // فتح الصفحة تلقائياً لتسهيل التجربة على حمودي
-            window.open(downloadUrl, '_blank');
-        }, 1500);
+        }
     }
 
     document.getElementById('urlInput').addEventListener('keypress', function (e) {
