@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v13 محمل حمودي الذكي | Ultimate Engine</title>
+    <title>v14 محمل حمودي الذكي | SnapEngine</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -176,7 +176,7 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>النسخة v13 - دعم يوتيوب وتيك توك المباشر</p>
+        <p>النسخة v14 - نظام Snap المباشر (يوتيوب وتيك توك)</p>
     </div>
     
     <div class="input-group">
@@ -185,7 +185,7 @@
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري سحب البيانات حموديتي.. ثواني</div>
+        <div style="margin-bottom: 10px;">جاري سحب الروابط بداخل صفحتك حموديتي..</div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
@@ -207,82 +207,46 @@
         btn.disabled = true;
 
         try {
-            // استخدام Cobalt API الأصلي مع إعدادات تمنع فتح المشغل
-            const response = await fetch('https://api.cobalt.tools/api/json', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    url: url,
-                    videoQuality: '720',
-                    downloadMode: 'auto' // لضمان التحميل المباشر
-                })
-            });
-
+            // استخدام SnapSave API القوي (عبر وسيط مستقر جداً)
+            const response = await fetch(`https://api.snaptik.pro/render?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
-            if (data.url) {
-                // دالة لإجبار المتصفح على التحميل بدلاً من الفتح
-                const downloadName = "حمولة_حمودي_" + Date.now() + ".mp4";
-                
-                results.innerHTML = `
-                    <div class="media-card">
-                        <h3 style="margin:0; text-align:center;">الشغل جاهز حموديتي ✅</h3>
-                        <p style="font-size:0.9rem; color:#64748b; text-align:center;">اضغط على الزر أدناه وسيبدأ التحميل فوراً</p>
-                        <div class="download-item">
-                            <span class="format-label">فيديو بجودة عالية</span>
-                            <a href="${data.url}" class="btn-dl" onclick="forceDownload(event, '${data.url}', '${downloadName}')">بدء التحميل المباشر</a>
-                        </div>
-                    </div>`;
+            if (data && data.url) {
+                renderResult(data.url, "فيديو عالي الجودة");
             } else {
-                throw new Error("No URL");
+                // محاولة ثانية بمحرك SnapYouTube
+                const resYT = await fetch(`https://api.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                const dataYT = await resYT.json();
+                if (dataYT.data) {
+                    renderResult(dataYT.data.play, "تحميل مباشر (No Watermark)");
+                } else {
+                    throw new Error("All engines failed");
+                }
             }
         } catch (error) {
             console.error('Error:', error);
-            results.innerHTML = `<div style="text-align:center; color: red; padding: 20px;">الرابط معاند حمودي، جرب سيرفر ثاني (Oceansaver) بالأسفل..</div>`;
-            // محاولة أخيرة بسيرفر احتياطي إذا فشل الكوبالت
-            tryFallback(url);
+            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط معاند حمودي، السيرفرات بمنطقتك عليها ضغط عالي.</div>`;
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
         }
     }
 
-    // دالة إجبار التحميل المباشر (Force Download)
-    async function forceDownload(event, url, filename) {
-        event.preventDefault();
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(blobUrl);
+    function renderResult(downloadUrl, label) {
+        const results = document.getElementById('results');
+        results.innerHTML = `
+            <div class="media-card">
+                <h3 style="margin:0; text-align:center;">الروابط جاهزة حموديتي ✅</h3>
+                <div class="download-item">
+                    <span class="format-label">${label}</span>
+                    <a href="${downloadUrl}" class="btn-dl" target="_blank" download="hamoudi_video.mp4">Download</a>
+                </div>
+            </div>`;
     }
 
-    async function tryFallback(url) {
-        const results = document.getElementById('results');
-        try {
-            const res = await fetch(`https://api.vkrdown.com/server?vurl=${encodeURIComponent(url)}`);
-            const data = await res.json();
-            if(data.data) {
-                results.innerHTML = `
-                    <div class="media-card">
-                        <h3 style="margin:0;">تم السحب عبر السيرفر الاحتياطي ✅</h3>
-                        <div class="download-item">
-                            <span class="format-label">الرابط المباشر</span>
-                            <a href="${data.data.downloads[0].url}" class="btn-dl" target="_blank">Download Now</a>
-                        </div>
-                    </div>`;
-            }
-        } catch (e) {
-            results.innerHTML += `<p style="text-align:center;">للأسف السيرفرات حالياً عليها حظر بمنطقتك حمودي.</p>`;
-        }
-    }
+    document.getElementById('urlInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { fetchVideo(); }
+    });
 </script>
 </body>
 </html>
