@@ -191,9 +191,6 @@
 </div>
 
 <script>
-    // السلاح الثاني: إضافة وقت الطلب للرابط لضمان عدم استجابة الكاش القديم
-    const API_BASE = "https://hurx-dw.hf.space"; 
-
     async function fetchInfo() {
         const urlInput = document.getElementById('urlInput');
         const loader = document.getElementById('loader');
@@ -213,57 +210,62 @@
         btn.style.opacity = "0.6";
 
         try {
-            // إضافة التوقيت لمنع الكاش
-            const finalEndpoint = `${API_BASE}/get-info/?t=${new Date().getTime()}`;
-            
-            const response = await fetch(finalEndpoint, {
-                method: 'POST',
+            // استخدام API كبالت العالمي لتجاوز الحظر والتعقيدات
+            const response = await fetch("https://api.cobalt.tools/api/json", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ url: url })
+                body: JSON.stringify({
+                    url: url,
+                    videoQuality: "720",
+                    filenamePattern: "basic"
+                })
             });
-
-            if (!response.ok) throw new Error('السيرفر مارد علينا');
 
             const resData = await response.json();
 
-            if (resData.success && resData.data.length > 0) {
-                resData.data.forEach(item => {
-                    let formatsHtml = item.formats.map(f => {
-                        const size = f.size ? `(${(f.size / (1024 * 1024)).toFixed(1)} MB)` : '';
-                        return `
-                        <a href="${f.url}" class="btn-dl" target="_blank" download rel="noopener noreferrer">
-                             تحميل ${f.quality} ${size}
-                        </a>`;
-                    }).join('');
-
-                    if (item.audio_url) {
-                        formatsHtml += `
-                        <a href="${item.audio_url}" class="btn-dl btn-audio" target="_blank" download rel="noopener noreferrer">
-                            تحميل صوت MP3 🎵
-                        </a>`;
-                    }
-
-                    results.innerHTML += `
-                        <div class="media-card">
-                            <div class="media-info">
-                                <img src="${item.thumbnail || 'https://via.placeholder.com/150'}" alt="thumbnail">
-                                <div class="media-details">
-                                    <h3>${item.title}</h3>
-                                    <div class="download-btns">${formatsHtml}</div>
+            // معالجة البيانات القادمة من كبالت
+            if (resData.status === "stream" || resData.status === "redirect") {
+                results.innerHTML = `
+                    <div class="media-card">
+                        <div class="media-info">
+                            <img src="https://api.cobalt.tools/assets/images/logo.png" style="width:50px;" alt="logo">
+                            <div class="media-details">
+                                <h3>تم تحليل الرابط بنجاح ✅</h3>
+                                <div class="download-btns">
+                                    <a href="${resData.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">
+                                         اضغط هنا للتحميل المباشر
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
+            } else if (resData.status === "picker") {
+                // في حالة وجود خيارات متعددة (مثل ألبوم صور أو جودات)
+                let pickerHtml = resData.picker.map(item => `
+                    <a href="${item.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">
+                        تحميل ${item.type || 'ملف'}
+                    </a>
+                `).join('');
+
+                results.innerHTML = `
+                    <div class="media-card">
+                        <div class="media-details">
+                            <h3>لقينا أكثر من ملف حمودي:</h3>
+                            <div class="download-btns">${pickerHtml}</div>
+                        </div>
+                    </div>
+                `;
             } else {
-                results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط ما اتحلل، تأكد منه حمودي!</div>`;
+                throw new Error('الرابط غير مدعوم');
             }
+
         } catch (error) {
             console.error('Error:', error);
-            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">صار خلل بالاتصال بالسيرفر. تأكد إن السبيس بوضع (Running)</div>`;
+            results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط ما اتحلل، تأكد منه أو جرب رابط ثاني حمودي!</div>`;
         } finally {
             loader.style.display = "none";
             btn.disabled = false;
