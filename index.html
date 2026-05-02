@@ -3,69 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v26 محمل حمودي الفولاذي</title>
+    <title>v27 محمل حمودي | الذهب</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00d2ff; --bg: #0f0f0f; --card: #1a1a1a; --text: #efefef; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .card { background: var(--card); width: 100%; max-width: 550px; padding: 40px; border-radius: 25px; border: 1px solid #333; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: var(--primary); margin-bottom: 25px; font-size: 1.8rem; }
+        h1 { color: var(--primary); font-size: 1.8rem; margin-bottom: 20px; }
         input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #333; background: #222; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
         button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--primary); color: #000; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        button:hover { opacity: 0.8; transform: scale(0.98); }
         .loader { display: none; margin-top: 20px; color: var(--primary); }
-        .result-box { margin-top: 25px; padding: 15px; border-radius: 12px; background: #252525; border: 1px dashed var(--primary); }
-        .dl-btn { display: block; background: #22c55e; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 10px; }
+        .dl-btn { display: block; background: #22c55e; color: #fff; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 15px; }
     </style>
 </head>
 <body>
-
 <div class="card">
-    <h1>محمل حمودي v26 🚀</h1>
+    <h1>محمل حمودي v27 🚀</h1>
     <input type="text" id="urlInput" placeholder="الصق الرابط هنا...">
-    <button id="btn" onclick="startDownload()">تحميل الآن</button>
-    <div id="loader" class="loader">جاري الاتصال بسيرفر الطوارئ...</div>
+    <button onclick="startDownload()">تحميل الآن</button>
+    <div id="loader" class="loader">جاري الاتصال بالسيرفر الاحترافي...</div>
     <div id="result"></div>
 </div>
-
 <script>
     const WORKER = "https://dw.hurhar.workers.dev/";
-
     async function startDownload() {
         const url = document.getElementById('urlInput').value.trim();
         const resDiv = document.getElementById('result');
         const loader = document.getElementById('loader');
-        
         if(!url) return;
-        resDiv.innerHTML = "";
-        loader.style.display = "block";
-
+        resDiv.innerHTML = ""; loader.style.display = "block";
         try {
             const resp = await fetch(WORKER, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ url })
             });
-            
             const data = await resp.json();
-            
-            // قراءة الرابط من محرك الطوارئ الجديد
-            let videoUrl = data.url || (data.data && data.data.video) || (data.links && data.links[0]?.link);
-
+            // البحث عن أول رابط فيديو متاح في النتائج
+            const videoUrl = data.links?.[0]?.link || data.url;
             if(videoUrl) {
-                resDiv.innerHTML = `
-                    <div class="result-box">
-                        <p>عاش حمودي! الفيديو جاهز ✅</p>
-                        <a href="${videoUrl}" class="dl-btn" target="_blank" rel="noopener noreferrer">اضغط هنا للتحميل</a>
-                    </div>`;
+                resDiv.innerHTML = `<a href="${videoUrl}" class="dl-btn" target="_blank">بدء التحميل المباشر</a>`;
             } else {
-                throw new Error("السيرفر مديجاوب، جرب غير رابط");
+                throw new Error("السيرفر يحتاج مفتاح API فعال.");
             }
         } catch(e) {
-            resDiv.innerHTML = `<div style="color:#ff5555; margin-top:15px;">يا ستار! ${e.message}</div>`;
-        } finally {
-            loader.style.display = "none";
-        }
+            resDiv.innerHTML = `<p style="color:red; margin-top:10px;">يا ستار! ${e.message}</p>`;
+        } finally { loader.style.display = "none"; }
     }
 </script>
 </body>
