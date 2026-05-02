@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v7 محمل حمودي الذكي | Universal Downloader</title>
+    <title>v10 محمل حمودي الذكي | Universal Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -210,37 +210,59 @@
         btn.disabled = true;
 
         try {
-            // استخدام نظام السحب المباشر API بدلاً من iframe المحجوب
-            const response = await fetch(`https://api.vkrdown.com/server?vurl=${encodeURIComponent(url)}`);
+            // استخدام محرك Oceansaver القوي لتجاوز مشاكل الـ DNS والـ CORS
+            const response = await fetch('https://p.oceansaver.in/ajax/download.php?button=1&start=1&end=1&format=mp4&url=' + encodeURIComponent(url));
             const data = await response.json();
 
-            if (data && data.data && data.data.downloads) {
-                let html = `
-                    <div class="media-card">
-                        <h3 style="margin:0;">الروابط جاهزة حموديتي ✅</h3>
-                        <p style="font-size:0.9rem; color:#64748b; margin-bottom:15px;">اختر الجودة اللي تناسبك للتحميل المباشر:</p>
-                        <div id="downloadList">`;
-                
-                data.data.downloads.forEach(dl => {
-                    html += `
-                        <div class="download-item">
-                            <span class="format-label">${dl.format} (${dl.quality})</span>
-                            <a href="${dl.url}" class="btn-dl" target="_blank" rel="noopener noreferrer">Download</a>
-                        </div>`;
-                });
-                
-                html += `</div></div>`;
-                results.innerHTML = html;
+            if (data && data.success) {
+                // نبدأ بمراقبة حالة تجهيز الرابط
+                checkProgress(data.id);
             } else {
-                throw new Error("No download links found");
+                throw new Error("API call failed");
             }
 
         } catch (error) {
             console.error('Error:', error);
             results.innerHTML = `<div style="text-align:center; color: #ef4444; padding: 20px;">الرابط معاند شوية، تأكد منه وجرب مرة ثانية حمودي!</div>`;
-        } finally {
             loader.style.display = "none";
             btn.disabled = false;
+        }
+    }
+
+    async function checkProgress(id) {
+        const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
+        const btn = document.getElementById('fetchBtn');
+
+        try {
+            const res = await fetch(`https://p.oceansaver.in/ajax/progress.php?id=${id}`);
+            const progressData = await res.json();
+
+            if (progressData && progressData.success && progressData.download_url) {
+                loader.style.display = "none";
+                btn.disabled = false;
+                
+                results.innerHTML = `
+                    <div class="media-card">
+                        <h3 style="margin:0;">الرابط جاهز حموديتي ✅</h3>
+                        <p style="font-size:0.9rem; color:#64748b; margin-bottom:15px;">تم تجهيز الملف بأعلى جودة، اضغط للتحميل:</p>
+                        <div id="downloadList">
+                            <div class="download-item">
+                                <span class="format-label">فيديو (MP4)</span>
+                                <a href="${progressData.download_url}" class="btn-dl" target="_blank" rel="noopener noreferrer">Download</a>
+                            </div>
+                        </div>
+                    </div>`;
+            } else if (progressData && progressData.success) {
+                // إذا لسه قيد المعالجة، ننتظر ثانيتين ونشيك مرة ثانية
+                setTimeout(() => checkProgress(id), 2000);
+            } else {
+                throw new Error("Progress failed");
+            }
+        } catch (e) {
+            loader.style.display = "none";
+            btn.disabled = false;
+            results.innerHTML = `<div style="text-align:center; color: red; padding: 20px;">صار خلل أثناء التجهيز، جرب مرة ثانية عيوني.</div>`;
         }
     }
 
