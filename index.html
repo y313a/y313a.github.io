@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>v17 محمل حمودي الذكي | Rapid Engine</title>
+    <title>v19 محمل حمودي الذكي | Open Source Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -166,6 +166,14 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
+        .server-status {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 600px) {
             .input-group { flex-direction: column; }
         }
@@ -176,16 +184,17 @@
 <div class="container">
     <div class="header">
         <h1>تحميل حمودي الذكي 🚀</h1>
-        <p>النسخة v17 - محرك Snap المباشر (RapidAPI)</p>
+        <p>النسخة v19 - محركات الـ Open Source المجانية</p>
     </div>
     
     <div class="input-group">
-        <input type="text" id="urlInput" placeholder="حط رابط يوتيوب، تيك توك، انستا...">
+        <input type="text" id="urlInput" placeholder="حط رابط يوتيوب أو تيك توك...">
         <button id="fetchBtn" onclick="fetchVideo()">تحليل الرابط</button>
     </div>
 
     <div id="loader" class="loader">
-        <div style="margin-bottom: 10px;">جاري سحب البيانات حموديتي.. ثواني</div>
+        <div style="margin-bottom: 10px;">جاري فحص السيرفرات المتاحة وسحب الرابط...</div>
+        <div id="statusText" class="server-status"></div>
         <img src="https://i.gifer.com/ZZ5H.gif" width="30" alt="loading">
     </div>
 
@@ -193,53 +202,125 @@
 </div>
 
 <script>
+    // مصفوفة سيرفرات يوتيوب (Piped API) المجانية والمفتوحة
+    const pipedInstances = [
+        'https://pipedapi.kavin.rocks',
+        'https://api.piped.projectsegfau.lt',
+        'https://piped-api.garudalinux.org',
+        'https://pipedapi.in.projectsegfau.lt'
+    ];
+
+    // استخراج ID اليوتيوب من الرابط
+    function getYoutubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
     async function fetchVideo() {
         const urlInput = document.getElementById('urlInput');
         const loader = document.getElementById('loader');
         const results = document.getElementById('results');
         const btn = document.getElementById('fetchBtn');
+        const statusText = document.getElementById('statusText');
         const url = urlInput.value.trim();
 
-        if (!url) { alert("وين الرابط حمودي؟"); return; }
+        if (!url) { alert("وين الرابط حموديتي؟"); return; }
 
         loader.style.display = "block";
         results.innerHTML = "";
+        statusText.innerText = "";
         btn.disabled = true;
 
         try {
-            // المحرك الجديد: SnapTik API عبر وسيط مستقر جداً
-            const response = await fetch(`https://api.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-            const data = await response.json();
+            // فحص إذا كان الرابط يوتيوب
+            const ytId = getYoutubeId(url);
+            
+            if (ytId) {
+                let success = false;
+                // تجربة السيرفرات واحد ورى الثاني (مصفوفة الـ Fallback)
+                for (let i = 0; i < pipedInstances.length; i++) {
+                    try {
+                        statusText.innerText = `دا أجرب سيرفر يوتيوب رقم ${i + 1}...`;
+                        const response = await fetch(`${pipedInstances[i]}/streams/${ytId}`);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && data.videoStreams) {
+                                // فلترة روابط الفيديو فقط واستبعاد الـ audio only
+                                const videoStreams = data.videoStreams.filter(v => v.videoOnly === false);
+                                // ترتيب حسب الجودة (أعلى جودة أولاً)
+                                videoStreams.sort((a, b) => b.bitrate - a.bitrate);
+                                
+                                const bestVideo = videoStreams[0];
+                                const audioStream = data.audioStreams.sort((a, b) => b.bitrate - a.bitrate)[0];
 
-            if (data.code === 0 && data.data) {
-                const videoData = data.data;
-                results.innerHTML = `
-                    <div class="media-card">
-                        <h3 style="margin:0; text-align:center;">الشغل جاهز يا بطل ✅</h3>
-                        <div class="download-item">
-                            <span class="format-label">فيديو MP4 (بدون علامة)</span>
-                            <a href="${videoData.play}" class="btn-dl" target="_blank">تحميل مباشر</a>
-                        </div>
-                        ${videoData.music ? `
-                        <div class="download-item">
-                            <span class="format-label">صوت فقط MP3</span>
-                            <a href="${videoData.music}" class="btn-dl" target="_blank">تحميل الصوت</a>
-                        </div>` : ''}
-                    </div>`;
+                                results.innerHTML = `
+                                    <div class="media-card">
+                                        <h3 style="margin:0; text-align:center;">تم سحب فيديو يوتيوب ✅</h3>
+                                        <p style="text-align:center; font-size:0.9rem;">${data.title}</p>
+                                        <div class="download-item">
+                                            <span class="format-label">فيديو (${bestVideo.quality})</span>
+                                            <a href="${bestVideo.url}" class="btn-dl" target="_blank">تحميل مباشر</a>
+                                        </div>
+                                        ${audioStream ? `
+                                        <div class="download-item">
+                                            <span class="format-label">صوت فقط (Audio)</span>
+                                            <a href="${audioStream.url}" class="btn-dl" target="_blank">تحميل الصوت</a>
+                                        </div>` : ''}
+                                    </div>`;
+                                success = true;
+                                break; // إذا نجح نكسر الحلقة (Loop)
+                            }
+                        }
+                    } catch (err) {
+                        console.warn(`سيرفر ${pipedInstances[i]} فشل، راح أحول عالبعده...`);
+                    }
+                }
+                
+                if (!success) {
+                    throw new Error("كل سيرفرات اليوتيوب محظورة حالياً بالـ DNS.");
+                }
+
+            } else if (url.includes('tiktok.com')) {
+                // التعامل مع تيك توك عبر TikWM
+                statusText.innerText = `دا أسحب من سيرفرات تيك توك المباشرة...`;
+                const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+
+                if (data.code === 0 && data.data) {
+                    const videoData = data.data;
+                    results.innerHTML = `
+                        <div class="media-card">
+                            <h3 style="margin:0; text-align:center;">تيك توك جاهز يا بطل ✅</h3>
+                            <p style="text-align:center; font-size:0.9rem;">${videoData.title}</p>
+                            <div class="download-item">
+                                <span class="format-label">فيديو (بدون علامة)</span>
+                                <a href="${videoData.play}" class="btn-dl" target="_blank">تحميل مباشر</a>
+                            </div>
+                            ${videoData.music ? `
+                            <div class="download-item">
+                                <span class="format-label">صوت (MP3)</span>
+                                <a href="${videoData.music}" class="btn-dl" target="_blank">تحميل الصوت</a>
+                            </div>` : ''}
+                        </div>`;
+                } else {
+                    throw new Error("فشل سحب التيك توك.");
+                }
             } else {
-                throw new Error("API Limit or Error");
+                 results.innerHTML = `
+                    <div class="media-card" style="border-color: #fca5a5; background: #fef2f2;">
+                        <h3 style="margin:0; color:#b91c1c;">عذراً حموديتي</h3>
+                        <p style="font-size:0.9rem; text-align:center;">هالنسخة مخصصة ليوتيوب وتيك توك بس.</p>
+                    </div>`;
             }
+
         } catch (error) {
-            console.error('Error:', error);
-            // حل بديل فوري إذا فشل المحرك الأول (محرك SaveFrom)
+            console.error('Error Details:', error);
             results.innerHTML = `
                 <div class="media-card" style="border-color: #fca5a5; background: #fef2f2;">
-                    <h3 style="margin:0; color:#b91c1c;">عناد بالسيرفرات حمودي!</h3>
-                    <p style="font-size:0.9rem;">اضغط الزر تحت راح يحولك لصفحة التحميل المباشرة:</p>
-                    <a href="https://savefrom.net/?url=${encodeURIComponent(url)}" 
-                       class="btn-dl" style="background:#ef4444; text-align:center; display:block;">
-                       انتقل لصفحة التحميل
-                    </a>
+                    <h3 style="margin:0; color:#b91c1c;">صار خطأ بالاتصال!</h3>
+                    <p style="font-size:0.9rem; text-align:center;">السيرفرات العالمية دا تواجه صعوبة بالاتصال من العراق. جرب غير رابط أو انتظر شوية.</p>
                 </div>`;
         } finally {
             loader.style.display = "none";
