@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v23 محمل حمودي الخارق | Ultra Downloader</title>
+    <title>v24 محمل حمودي الخارق | Ultra Downloader</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00d2ff; --secondary: #3a7bd5; --bg: #0f0f0f; --card: #1a1a1a; --text: #efefef; }
@@ -29,7 +29,7 @@
 
 <div class="card">
     <h1>محمل حمودي الخارق ⚡</h1>
-    <p style="color: #888;">بديل Cobalt المستقر - نسخة 2026</p>
+    <p style="color: #888;">إصدار 2026 - المحرك الذكي v24</p>
 
     <div class="input-box">
         <input type="text" id="urlInput" placeholder="الصق رابط الفيديو (YT, TikTok, FB, IG)...">
@@ -38,7 +38,7 @@
 
     <div id="loader" class="loader">
         <div class="spinner"></div>
-        <p>جاري سحب الفيديو من السيرفر...</p>
+        <p>جاري كسر حماية الرابط وسحب الفيديو...</p>
     </div>
 
     <div id="result"></div>
@@ -48,12 +48,16 @@
     const WORKER = "https://dw.hurhar.workers.dev/";
 
     async function process() {
-        const url = document.getElementById('urlInput').value.trim();
+        const urlInput = document.getElementById('urlInput');
+        const url = urlInput.value.trim();
         const resDiv = document.getElementById('result');
         const loader = document.getElementById('loader');
         const btn = document.getElementById('btn');
 
-        if(!url) return;
+        if(!url) {
+            resDiv.innerHTML = `<div class="error">محمديتي، نسيت تحط الرابط!</div>`;
+            return;
+        }
 
         resDiv.innerHTML = "";
         loader.style.display = "block";
@@ -62,23 +66,35 @@
         try {
             const response = await fetch(WORKER, {
                 method: 'POST',
-                body: JSON.stringify({ url })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
             });
+            
             const data = await response.json();
 
-            if(data.error || !data.links) throw new Error("المحرك ما گدر يوصل للفيديو، جرب غير رابط.");
+            // فحص كل الاحتمالات لردود الـ API المختلفة لعام 2026
+            let finalDownloadUrl = "";
 
-            // المحرك الجديد يرجع مصفوفة روابط (جودات مختلفة)
-            const mainLink = data.links[0].link; 
-            const quality = data.links[0].quality || "HD";
+            if (data.url) {
+                finalDownloadUrl = data.url;
+            } else if (data.result && data.result.url) {
+                finalDownloadUrl = data.result.url;
+            } else if (data.links && data.links.length > 0) {
+                finalDownloadUrl = data.links[0].link;
+            } else if (data.data && data.data.main_url) {
+                finalDownloadUrl = data.data.main_url;
+            }
 
-            resDiv.innerHTML = `
-                <div class="result-area">
-                    <p style="color: var(--primary);">تم التحليل بنجاح! ✅</p>
-                    <p>الجودة المكتشفة: <strong>${quality}</strong></p>
-                    <a href="${mainLink}" class="dl-link" target="_blank">اضغط هنا للتحميل المباشر</a>
-                    <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">إذا ما اشتغل التحميل، دوس يمين وحفظ باسم.</p>
-                </div>`;
+            if (finalDownloadUrl) {
+                resDiv.innerHTML = `
+                    <div class="result-area">
+                        <p style="color: var(--primary); font-weight:700;">تم التحليل بنجاح! ✅</p>
+                        <a href="${finalDownloadUrl}" class="dl-link" target="_blank" rel="noopener noreferrer">اضغط هنا للتحميل المباشر</a>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">محمديتي، إذا ما بدأ التحميل، دوس يمين وحفظ باسم.</p>
+                    </div>`;
+            } else {
+                throw new Error(data.message || "المحرك مديگدر يلقى رابط الفيديو، يمكن الرابط خاص أو محمي.");
+            }
 
         } catch (e) {
             resDiv.innerHTML = `<div class="error">يا ستار! صار خلل: ${e.message}</div>`;
@@ -87,6 +103,13 @@
             btn.disabled = false;
         }
     }
+
+    // إضافة دعم التحميل عند الضغط على Enter
+    document.getElementById('urlInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            process();
+        }
+    });
 </script>
 </body>
 </html>
