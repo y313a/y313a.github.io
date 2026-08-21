@@ -63,6 +63,7 @@ def main():
         occ_type = matched_occasion.get("type", "مناسبة")
         title = matched_occasion.get("title", "")
         desc = matched_occasion.get("description", "")
+        hadith = matched_occasion.get("hadith", "")
 
         if occ_type == "فرح":
             icon = "🎉"
@@ -75,10 +76,16 @@ def main():
             f"{date_header}\n\n"
             f"{icon} <b>{type_label}:</b>\n"
             f"✨ <b>{title}</b>\n\n"
-            f"📖 <b>نبذة:</b>\n{desc}\n\n"
+            f"📖 <b>نبذة عن المناسبة:</b>\n{desc}\n\n"
+        )
+
+        if hadith:
+            message += f"📜 <b>رواية مباركة:</b>\n<i>«{hadith}»</i>\n\n"
+
+        message += (
             f"ــــــــــــــــــــــــــــــــــــــــ\n"
             f"🔗 <b>لمتابعة السجل الكامل عبر موقعنا:</b>\n"
-            f"https://{chat_id.replace('@', '').lower()}.github.io"
+            f"https://y313a.github.io"
         )
     else:
         message = (
