@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقويم المناسبات الإسلامية والولايات المباركة</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --gold-primary: #d4af37;
+            --gold-hover: #f3e5ab;
+            --joy-color: #2ea043;
+            --sorrow-color: #da3633;
+            --telegram-blue: #0088cc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Tajawal', sans-serif;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(13, 17, 23, 0) 100%);
+            border-bottom: 1px solid var(--card-border);
+            padding: 40px 20px 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Amiri', serif;
+            color: var(--gold-primary);
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 0 auto 20px;
+        }
+
+        .date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            border: 1px solid var(--gold-primary);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: var(--gold-hover);
+            font-weight: bold;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .telegram-btn-wrapper {
+            margin-top: 25px;
+        }
+
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--telegram-blue);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 26px;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 136, 204, 0.5);
+            background-color: #0099e6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.8rem;
+            color: var(--gold-primary);
+            margin: 35px 0 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 8px;
+        }
+
+        .today-card {
+            background: var(--card-bg);
+            border: 2px solid var(--gold-primary);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .today-card.joy {
+            border-color: var(--joy-color);
+        }
+
+        .today-card.sorrow {
+            border-color: var(--sorrow-color);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .badge.joy {
+            background-color: rgba(46, 160, 67, 0.2);
+            color: #56d364;
+            border: 1px solid var(--joy-color);
+        }
+
+        .badge.sorrow {
+            background-color: rgba(218, 54, 51, 0.2);
+            color: #f85149;
+            border: 1px solid var(--sorrow-color);
+        }
+
+        .today-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .today-desc {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .search-box, .filter-select {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .filter-select {
+            width: 220px;
+        }
+
+        .search-box:focus, .filter-select:focus {
+            border-color: var(--gold-primary);
+        }
+
+        .occasions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .occasion-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .occasion-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--gold-primary);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .date-tag {
+            background-color: #21262d;
+            color: var(--gold-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            border-top: 1px solid var(--card-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-kaaba"></i> تقويم المناسبات الإسلامية والولايات المباركة</h1>
+        <p>سجل جامع لتخليد تواريخ أفراح وأحزان أهل البيت عليهم السلام والمناسبات التاريخية الموثقة</p>
+        
+        <div class="date-badge">
+            <i class="fa-regular fa-calendar-check"></i>
+            <span id="current-hijri-date">جاري حساب التاريخ الهجري...</span>
+        </div>
+
+        <div class="telegram-btn-wrapper">
+            <!-- ضع رابط قناتك ببدل YOUR_TELEGRAM_CHANNEL -->
+            <a href="https://t.me/YOUR_TELEGRAM_CHANNEL" target="_blank" class="telegram-btn" id="telegram-link">
+                <i class="fa-brands fa-telegram"></i>
+                اشترك في القناة ليصلك الإشعار اليومي
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="section-title">
+            <i class="fa-solid fa-star"></i> مناسبة اليوم
+        </div>
+        <div id="today-container">
+            <div class="today-card">
+                <div class="today-title">جاري التثبت من مناسبات اليوم...</div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-list-ul"></i> السجل الكامل للمناسبات
+        </div>
+
+        <div class="controls">
+            <input type="text" id="search-input" class="search-box" placeholder="ابحث عن مناسبة، إمام، أو حدث..." oninput="filterOccasions()">
+            <select id="month-select" class="filter-select" onchange="filterOccasions()">
+                <option value="all">كل الأشهر الهجرية</option>
+                <option value="1">1 - محرم الحرام</option>
+                <option value="2">2 - صفر الخير</option>
+                <option value="3">3 - ربيع الأول</option>
+                <option value="4">4 - ربيع الثاني</option>
+                <option value="5">5 - جمادى الأولى</option>
+                <option value="6">6 - جمادى الآخرة</option>
+                <option value="7">7 - رجب الأصب</option>
+                <option value="8">8 - شعبان المعظم</option>
+                <option value="9">9 - شهر رمضان المبارك</option>
+                <option value="10">10 - شوال المكرم</option>
+                <option value="11">11 - ذو القعدة الحرام</option>
+                <option value="12">12 - ذو الحجة الحرام</option>
+            </select>
+        </div>
+
+        <div id="occasions-grid" class="occasions-grid"></div>
+
+    </div>
+
+    <footer>
+        تأسست هذه الصفحة بجهود مباركة لتخليد ذكر النبي وآله الأطهار عليهم أفضل الصلاة والسلام.
+    </footer>
+
+    <script>
+        let allOccasions = [];
+        const hijriMonthsNames = [
+            "محرم الحرام", "صفر الخير", "ربيع الأول", "ربيع الثاني",
+            "جمادى الأولى", "جمادى الآخرة", "رجب الأصب", "شعبان المعظم",
+            "شهر رمضان المبارك", "شوال المكرم", "ذو القعدة الحرام", "ذو الحجة الحرام"
+        ];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadOccasions();
+            displayCurrentDate();
+            checkTodayOccasion();
+            filterOccasions();
+        });
+
+        async function loadOccasions() {
+            try {
+                const response = await fetch('occasions.json');
+                allOccasions = await response.json();
+            } catch (error) {
+                console.error("خطأ في تحميل ملف المناسبات:", error);
+            }
+        }
+
+        function getHijriDateObj() {
+            const today = new Date();
+            const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+            const parts = formatter.formatToParts(today);
+            return {
+                day: parseInt(parts.find(p => p.type === 'day').value, 10),
+                month: parseInt(parts.find(p => p.type === 'month').value, 10),
+                year: parseInt(parts.find(p => p.type === 'year').value, 10)
+            };
+        }
+
+        function displayCurrentDate() {
+            const hDate = getHijriDateObj();
+            const monthName = hijriMonthsNames[hDate.month - 1];
+            document.getElementById('current-hijri-date').innerText = `${hDate.day} ${monthName} ${hDate.year} هـ`;
+        }
+
+        function checkTodayOccasion() {
+            const hDate = getHijriDateObj();
+            const todayMatch = allOccasions.find(o => o.day === hDate.day && o.month === hDate.month);
+            const container = document.getElementById('today-container');
+
+            if (todayMatch) {
+                const typeClass = todayMatch.type === 'فرح' ? 'joy' : 'sorrow';
+                const badgeText = todayMatch.type === 'فرح' ? '🎉 مناسبة مباركة / فرح' : '🏴 مناسبة حزينة / استذكار';
+                
+                container.innerHTML = `
+                    <div class="today-card ${typeClass}">
+                        <span class="badge ${typeClass}">${badgeText}</span>
+                        <div class="today-title">${todayMatch.title}</div>
+                        <div class="today-desc">${todayMatch.description}</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="today-card">
+                        <div class="today-title" style="font-size: 1.1rem; color: var(--text-muted); font-weight: normal;">
+                            <i class="fa-regular fa-calendar-minus"></i> لا توجد مناسبة رئيسية مسجلة لهذا اليوم (${hDate.day} ${hijriMonthsNames[hDate.month - 1]}).
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function filterOccasions() {
+            const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
+            const selectedMonth = document.getElementById('month-select').value;
+            const grid = document.getElementById('occasions-grid');
+
+            const filtered = allOccasions.filter(item => {
+                const matchesSearch = item.title.toLowerCase().includes(searchVal) || 
+                                      item.description.toLowerCase().includes(searchVal);
+                const matchesMonth = selectedMonth === 'all' || item.month.toString() === selectedMonth;
+                return matchesSearch && matchesMonth;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="no-results"><i class="fa-solid fa-magnifying-glass"></i> لم يتم العثور على مناسبات تطابق البحث.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => {
+                const typeClass = item.type === 'فرح' ? 'joy' : 'sorrow';
+                const monthName = hijriMonthsNames[item.month - 1];
+                return `
+                    <div class="occasion-card">
+                        <div>
+                            <div class="card-header">
+                                <span class="date-tag">${item.day} ${monthName}</span>
+                                <span class="badge ${typeClass}">${item.type}</span>
+                            </div>
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-desc">${item.description}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
